@@ -57,7 +57,6 @@
         };
 
         // --- 2. NGÂN HÀNG CÂU HỎI MẪU (MOCK DATA) ---
-        // Được gắn thẻ kỹ năng để phù hợp với ma trận
         const SAMPLE_QUESTIONS = {
             Listening: [
                 "Listen to the passage and choose the correct answer: What is the main idea?",
@@ -140,7 +139,7 @@
                         <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm"><Languages size={24} /></div>
                         <div>
                             <h1 className="text-xl font-bold uppercase tracking-wide">TIẾNG ANH GLOBAL SUCCESS</h1>
-                            <p className="text-xs text-blue-100 opacity-90 hidden sm:block">Hệ thống tạo đề chuẩn Ma trận BGD (v3.0 Matrix Edition)</p>
+                            <p className="text-xs text-blue-100 opacity-90 hidden sm:block">Hệ thống tạo đề chuẩn Ma trận BGD (v3.2 Professional Format)</p>
                         </div>
                     </div>
                 </div>
@@ -350,24 +349,116 @@
                 const matrixKey = (grade === 'Lớp 9') ? '9' : '6-7-8';
                 const matrix = MATRIX_RULES[matrixKey];
                 
-                // Hàm sinh câu hỏi giả lập dựa trên kỹ năng
+                let globalQuestionIndex = 1;
+                const answerKeys = []; // Array để lưu đáp án
+
+                // Hàm sinh câu hỏi và lưu đáp án
                 const generateSectionContent = (skill, count) => {
                     let html = '';
                     const questions = SAMPLE_QUESTIONS[skill] || SAMPLE_QUESTIONS['Language'];
+                    
                     for(let i=0; i<count; i++) {
+                        const currentQNum = globalQuestionIndex++;
                         const qData = questions[i % questions.length];
-                        if (typeof qData === 'string') {
-                            html += `<p class="question"><strong>Question ${i+1}:</strong> ${qData}</p><p class="options">_______________________________________</p>`;
+                        
+                        let answer = '';
+                        
+                        // Logic xác định đáp án (Giả lập)
+                        if (skill === 'Writing' && grade !== 'Lớp 9') {
+                            answer = "Học sinh trả lời theo ý hiểu";
+                            html += `<div class="question-block">
+                                        <p class="question"><strong>${currentQNum}.</strong> ${typeof qData === 'string' ? qData : qData.q}</p>
+                                        <p class="answer-space">__________________________________________________________________________</p>
+                                     </div>`;
                         } else {
-                            html += `<p class="question"><strong>Question ${i+1}:</strong> ${qData.q}</p>
-                                     <p class="options">${qData.options.join('&nbsp;&nbsp;&nbsp;&nbsp;')}</p>`;
+                            // Trắc nghiệm: Random đáp án đúng A, B, C hoặc D
+                            const correctChar = ['A', 'B', 'C', 'D'][Math.floor(Math.random() * 4)];
+                            answer = correctChar;
+
+                            if (typeof qData === 'string') {
+                                html += `<div class="question-block">
+                                            <p class="question"><strong>${currentQNum}.</strong> ${qData}</p>
+                                            <p class="options">A. Option A &nbsp;&nbsp;&nbsp;&nbsp; B. Option B &nbsp;&nbsp;&nbsp;&nbsp; C. Option C &nbsp;&nbsp;&nbsp;&nbsp; D. Option D</p>
+                                         </div>`;
+                            } else {
+                                html += `<div class="question-block">
+                                            <p class="question"><strong>${currentQNum}.</strong> ${qData.q}</p>
+                                            <p class="options">${qData.options.join('&nbsp;&nbsp;&nbsp;&nbsp;')}</p>
+                                         </div>`;
+                            }
                         }
+                        
+                        answerKeys.push({ q: currentQNum, ans: answer });
                     }
                     return html;
                 };
 
                 // Tạo nội dung HTML cho file Word
-                const content = `
+                let bodyContent = '';
+                
+                // Tiêu đề và Thông tin
+                bodyContent += `
+                    <h2>${formData.schoolName.toUpperCase()}</h2>
+                    <h3>HỒ SƠ ĐỀ KIỂM TRA MÔN TIẾNG ANH - ${formData.grade.toUpperCase()}</h3>
+                    <p style="text-align:center"><em>Kỳ thi: ${formData.examName} | Mã đề: ${formData.examNumber} | Thời gian: 60 phút</em></p>
+                    <br/>
+                `;
+                
+                // I. Ma trận
+                bodyContent += `<h4>I. MA TRẬN ĐỀ KIỂM TRA (MATRIX)</h4>
+                    <table>
+                        <thead><tr><th>Kỹ năng</th><th>NB</th><th>TH</th><th>VD</th><th>VDC</th><th>Tổng</th></tr></thead>
+                        <tbody>
+                            ${matrix.structure.map(row => `<tr><td class="text-left">${row.skill}</td><td>${row.levels.NB || '-'}</td><td>${row.levels.TH || '-'}</td><td>${row.levels.VD || '-'}</td><td>${row.levels.VDC || '-'}</td><td><strong>${row.total}</strong></td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                    <br/><hr/><br/>`;
+
+                // II. Nội dung đề
+                bodyContent += `<h4>II. NỘI DUNG ĐỀ KIỂM TRA (ĐỀ XUẤT)</h4>`;
+                matrix.structure.forEach((row, idx) => {
+                    const sectionMap = {
+                        'Listening': 'I. LISTENING',
+                        'Reading': 'II. READING',
+                        'Language': 'III. LANGUAGE FOCUS',
+                        'Writing': 'IV. WRITING'
+                    };
+                    const sectionTitle = sectionMap[row.skill] || `PART ${idx + 1}: ${row.skill.toUpperCase()}`;
+
+                    bodyContent += `<div class="section-title">${sectionTitle} (${row.total} questions)</div>`;
+                    
+                    if (row.skill === 'Reading') {
+                        const passage = SAMPLE_READING_PASSAGE[formData.grade] || SAMPLE_READING_PASSAGE['Lớp 8'];
+                        bodyContent += `<div class="reading-passage"><strong>Read the following passage and answer the questions below:</strong><br/><br/>${passage}</div>`;
+                    }
+                    if (row.skill === 'Listening') {
+                         bodyContent += `<p style="font-style:italic; margin-bottom:10px;">(Teacher plays the recording twice)</p>`;
+                    }
+
+                    bodyContent += generateSectionContent(row.skill, row.total);
+                });
+                
+                bodyContent += `<br/><p style="text-align: center;"><em>--- THE END ---</em></p>`;
+
+                // III. Đáp án (Trang mới)
+                bodyContent += `
+                    <br clear=all style='mso-special-character:line-break;page-break-before:always'>
+                    <h3 style="text-align:center; margin-top:20px;">ĐÁP ÁN VÀ HƯỚNG DẪN CHẤM (ANSWER KEY)</h3>
+                    <p style="text-align:center"><em>Mã đề: ${formData.examNumber}</em></p>
+                    <table style="width:50%; margin: 20px auto;">
+                        <thead>
+                            <tr>
+                                <th style="background-color:#ccc;">Câu</th>
+                                <th style="background-color:#ccc;">Đáp án</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${answerKeys.map(k => `<tr><td style="text-align:center">${k.q}</td><td style="text-align:center; font-weight:bold; color:#005CA9;">${k.ans}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+                const finalHtml = `
                     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
                     <head><meta charset="utf-8"><title>${formData.examName}</title>
                     <style>
@@ -377,76 +468,19 @@
                         th, td { border: 1px solid black; padding: 5px; text-align: center; }
                         th { background-color: #f0f0f0; }
                         .text-left { text-align: left; }
-                        .section-title { font-weight: bold; margin-top: 20px; text-transform: uppercase; }
-                        .question { margin-bottom: 5px; margin-top: 10px; }
+                        .section-title { font-weight: bold; margin-top: 20px; text-transform: uppercase; margin-bottom: 10px; }
+                        .question-block { margin-bottom: 10px; }
+                        .question { margin-bottom: 5px; }
                         .options { margin-left: 20px; }
-                        .reading-passage { border: 1px solid #ccc; padding: 15px; background-color: #fcfcfc; font-style: italic; margin-bottom: 15px; }
+                        .answer-space { margin-left: 20px; font-style: italic; color: #555; }
+                        .reading-passage { border: 1px solid #ccc; padding: 15px; background-color: #fcfcfc; font-style: italic; margin-bottom: 15px; text-align: justify; }
                     </style></head>
-                    <body>
-                        <h2>${formData.schoolName.toUpperCase()}</h2>
-                        <h3>HỒ SƠ ĐỀ KIỂM TRA MÔN TIẾNG ANH - ${formData.grade.toUpperCase()}</h3>
-                        <p style="text-align:center"><em>Kỳ thi: ${formData.examName} | Mã đề: ${formData.examNumber} | Thời gian: 60 phút</em></p>
-                        <br/>
-                        
-                        <h4>I. MA TRẬN ĐỀ KIỂM TRA (MATRIX)</h4>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Kỹ năng</th>
-                                    <th>Nhận biết</th>
-                                    <th>Thông hiểu</th>
-                                    <th>Vận dụng</th>
-                                    <th>Vận dụng cao</th>
-                                    <th>Tổng câu</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${matrix.structure.map(row => `
-                                    <tr>
-                                        <td class="text-left">${row.skill}</td>
-                                        <td>${row.levels.NB || '-'}</td>
-                                        <td>${row.levels.TH || '-'}</td>
-                                        <td>${row.levels.VD || '-'}</td>
-                                        <td>${row.levels.VDC || '-'}</td>
-                                        <td><strong>${row.total}</strong></td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                        
-                        <br/><hr/><br/>
+                    <body>${bodyContent}</body></html>`;
 
-                        <h4>II. NỘI DUNG ĐỀ KIỂM TRA (ĐỀ XUẤT)</h4>
-                        
-                        ${matrix.structure.map((row, idx) => {
-                            let sectionHtml = `<div class="section-title">PART ${idx + 1}: ${row.skill.toUpperCase()} (${row.total} questions)</div>`;
-                            
-                            // Thêm bài đọc nếu là phần Reading
-                            if (row.skill === 'Reading') {
-                                const passage = SAMPLE_READING_PASSAGE[formData.grade] || SAMPLE_READING_PASSAGE['Lớp 8'];
-                                sectionHtml += `<div class="reading-passage">
-                                    <strong>Read the following passage and answer the questions below:</strong><br/><br/>
-                                    ${passage}
-                                </div>`;
-                            }
-
-                            // Thêm ghi chú nếu là phần Listening
-                            if (row.skill === 'Listening') {
-                                 sectionHtml += `<p style="font-style:italic; margin-bottom:10px;">(Teacher plays the recording twice)</p>`;
-                            }
-
-                            sectionHtml += generateSectionContent(row.skill, row.total);
-                            return sectionHtml;
-                        }).join('')}
-
-                        <br/>
-                        <p style="text-align: center;"><em>--- THE END ---</em></p>
-                    </body></html>`;
-
-                const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
+                const blob = new Blob(['\ufeff', finalHtml], { type: 'application/msword' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = `De_Kiem_Tra_${formData.examName.replace(/\s+/g, '_')}.doc`;
+                link.download = `De_Kiem_Tra_${formData.examName.replace(/\s+/g, '_')}_Co_Dap_An.doc`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -459,7 +493,7 @@
                         <h2 className="text-2xl font-bold mb-2">Hồ sơ đã sẵn sàng!</h2>
                         <p className="text-gray-500 mb-6">Đã áp dụng ma trận chuẩn BGD cho khối {grade}</p>
                         <button onClick={handleDownload} className="bg-[#005CA9] text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-blue-700 transition flex items-center gap-2 mx-auto">
-                            <Download size={20} /> TẢI VỀ HỒ SƠ (.DOC)
+                            <Download size={20} /> TẢI VỀ HỒ SƠ & ĐÁP ÁN (.DOC)
                         </button>
                     </div>
                 </div>
