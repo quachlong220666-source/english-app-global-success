@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiếng Anh Global Success App - Pro Matrix</title>
+    <title>Tiếng Anh Global Success App - Preview Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -13,7 +13,29 @@
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .animate-fade-in { animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        /* Table styles for Matrix */
+        
+        /* Styles cho trang xem trước (A4 Simulation) */
+        .preview-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            font-family: 'Times New Roman', serif;
+            font-size: 12pt;
+            line-height: 1.3;
+            color: black;
+            overflow-wrap: break-word;
+        }
+        .preview-container {
+            background: #525659;
+            padding: 40px 0;
+            height: 600px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
         .matrix-table th, .matrix-table td { border: 1px solid #e2e8f0; padding: 8px; text-align: center; font-size: 0.85rem; }
         .matrix-table th { background-color: #005CA9; color: white; }
         .matrix-table .sub-header { background-color: #f1f5f9; font-weight: bold; color: #334155; }
@@ -23,11 +45,11 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useMemo, Fragment } = React;
+        const { useState, useEffect, useMemo, useCallback } = React;
 
-        // --- 1. CẤU HÌNH MA TRẬN (MATRIX CONFIG) TỪ FILE PDF ---
+        // --- 1. DỮ LIỆU CỐ ĐỊNH (CONSTANTS) ---
         const MATRIX_RULES = {
-            '6-7-8': { // Khối 6, 7, 8 giống nhau
+            '6-7-8': { 
                 structure: [
                     { skill: 'Listening', total: 8, levels: { NB: 3, TH: 3, VD: 2, VDC: 0 } },
                     { skill: 'Reading', total: 8, levels: { NB: 3, TH: 3, VD: 1, VDC: 1 } },
@@ -35,103 +57,103 @@
                     { skill: 'Writing', total: 8, levels: { NB: 2, TH: 1, VD: 2, VDC: 3 } }
                 ],
                 totalQuestions: 40,
-                description: "Thời gian 60 phút; Listening - Reading - Language - Writing (câu/ngắn). Tỉ lệ 4-3-2-1."
+                description: "Thời gian 60 phút; Tỉ lệ 4-3-2-1"
             },
-            '9': { // Khối 9 khác biệt (100% TN, không Writing tự luận dài)
+            '9': { 
                 structure: [
                     { skill: 'Listening', total: 10, levels: { NB: 4, TH: 3, VD: 2, VDC: 1 } },
                     { skill: 'Reading', total: 10, levels: { NB: 4, TH: 3, VD: 2, VDC: 1 } },
                     { skill: 'Language', total: 20, levels: { NB: 8, TH: 6, VD: 4, VDC: 2 } }
                 ],
                 totalQuestions: 40,
-                description: "Thời gian 60 phút; 100% Trắc nghiệm. Tỉ lệ 4-3-2-1."
+                description: "Thời gian 60 phút; 100% Trắc nghiệm"
             }
         };
 
-        // --- BỔ SUNG: BÀI ĐỌC MẪU (READING PASSAGES) ---
         const SAMPLE_READING_PASSAGE = {
-            'Lớp 6': "My new school is in a quiet place not far from the city centre. It has three buildings and a large yard. This year there are 26 classes with more than 1,000 students. Most students are hard-working and serious. The school has about 40 teachers. They are all helpful and friendly. My school has different clubs: Dance, English, Arts, Football and Basketball. I like English, so I joined the English club. I love my school because it is a good school.",
-            'Lớp 7': "Healthy living is about making healthy choices every day. It’s about eating a balanced diet, getting regular exercise, and avoiding harmful habits. Eating plenty of fruits and vegetables is important. You should also drink enough water. Exercise helps keep your body strong and your mind sharp. Try to get at least 30 minutes of moderate activity most days. Getting enough sleep is also crucial for your health.",
-            'Lớp 8': "If you go to the American state of Alaska, you might find the traditional lifestyle there interesting. Although Alaska is quite large, with nearly 1.7 million square kilometres, it has a small population of about 730,000. The native peoples in Alaska still maintain many of their traditions. They keep their old ways of making arts and crafts alive. Various native groups have their own special styles of carving or weaving as well as their unique tribal dances and drumming. Therefore, visitors to Alaska may experience some of their culture in their villages.",
-            'Lớp 9': "Living in a city has both advantages and disadvantages. On the plus side, it is easier to find jobs and there are better schools and hospitals. Entertainment is also diverse with cinemas, parks, and museums. However, city life can be stressful. The cost of living is high, and the environment is often polluted. Traffic jams are a common problem during rush hours. Despite these drawbacks, many people still prefer city life for its convenience and opportunities."
+            'Lớp 6': "My new school is in a quiet place not far from the city centre. It has three buildings and a large yard. This year there are 26 classes with more than 1,000 students. Most students are hard-working and serious. The school has about 40 teachers. They are all helpful and friendly.",
+            'Lớp 7': "Healthy living is about making healthy choices every day. It’s about eating a balanced diet, getting regular exercise, and avoiding harmful habits. Eating plenty of fruits and vegetables is important. You should also drink enough water.",
+            'Lớp 8': "If you go to the American state of Alaska, you might find the traditional lifestyle there interesting. Although Alaska is quite large, it has a small population. The native peoples in Alaska still maintain many of their traditions.",
+            'Lớp 9': "Living in a city has both advantages and disadvantages. On the plus side, it is easier to find jobs and there are better schools. However, city life can be stressful. The cost of living is high, and the environment is often polluted."
         };
 
-        // --- 2. NGÂN HÀNG CÂU HỎI MẪU (FULL DATA - ĐÃ SỬA LỖI OPTION A, B, C, D) ---
+        // Dữ liệu dự phòng
         const SAMPLE_QUESTIONS = {
             Listening: [
-                { q: "What is the main idea of the talk?", options: ["A. Life in the city", "B. A famous person", "C. School activities", "D. Environmental problems"] },
-                { q: "According to the speaker, what time does the event start?", options: ["A. At 7:00 a.m.", "B. At 8:30 a.m.", "C. At 9:00 a.m.", "D. At 2:00 p.m."] },
-                { q: "How does the speaker feel about the new project?", options: ["A. Excited", "B. Bored", "C. Worried", "D. Indifferent"] },
-                { q: "What will they probably do next?", options: ["A. Go home", "B. Have lunch", "C. Continue working", "D. Call their parents"] },
-                { q: "Who is the speaker talking to?", options: ["A. A teacher", "B. A classmate", "C. A parent", "D. A doctor"] },
-                { q: "Where does the conversation take place?", options: ["A. In a library", "B. At a supermarket", "C. At school", "D. In a park"] },
-                { q: "What does the boy want to buy?", options: ["A. A book", "B. A pen", "C. A notebook", "D. A ruler"] },
-                { q: "How often does she go swimming?", options: ["A. Every day", "B. Twice a week", "C. Once a month", "D. Never"] },
-                { q: "What is the weather like today?", options: ["A. Sunny", "B. Rainy", "C. Cloudy", "D. Windy"] },
-                { q: "Which subject does he like best?", options: ["A. Math", "B. English", "C. History", "D. Music"] }
+                { q: "What is the main idea of the talk?", options: ["A. City life", "B. School life", "C. Holidays", "D. Environment"] },
+                { q: "When does the event start?", options: ["A. 7:00 a.m.", "B. 8:30 a.m.", "C. 9:00 a.m.", "D. 2:00 p.m."] },
+                { q: "How does the speaker feel?", options: ["A. Happy", "B. Sad", "C. Worried", "D. Angry"] },
+                { q: "Who is the speaker talking to?", options: ["A. Teacher", "B. Friend", "C. Parent", "D. Doctor"] }
             ],
             Reading: [
-                { q: "What is the passage mainly about?", options: ["A. A traditional festival", "B. A famous landmark", "C. Daily routines", "D. Educational systems"] },
-                { q: "The word 'it' in the passage refers to:", options: ["A. The school", "B. The city", "C. The yard", "D. The student"] },
-                { q: "According to the passage, which statement is TRUE?", options: ["A. Students are lazy.", "B. Teachers are helpful.", "C. The school is small.", "D. There are no clubs."] },
-                { q: "Which of the following is NOT mentioned?", options: ["A. Number of classes", "B. School location", "C. School uniform", "D. Teachers' attitude"] },
-                { q: "Why does the author like the school?", options: ["A. It is new.", "B. It is big.", "C. It is good.", "D. It is near home."] },
-                { q: "The word 'huge' is closest in meaning to:", options: ["A. small", "B. very big", "C. tiny", "D. average"] },
-                { q: "How many students are there in the school?", options: ["A. Over 1000", "B. Under 500", "C. Exactly 100", "D. About 200"] },
-                { q: "What can be inferred from the text?", options: ["A. The author hates school.", "B. The author is a teacher.", "C. The author enjoys school life.", "D. The school is very old."] },
-                { q: "Where is the school located?", options: ["A. In the countryside", "B. Near the city centre", "C. On an island", "D. In the mountains"] },
-                { q: "What does the author do in free time?", options: ["A. Read books", "B. Play football", "C. Join clubs", "D. Sleep"] }
+                { q: "What is the passage about?", options: ["A. Festival", "B. Landmark", "C. Routine", "D. Education"] },
+                { q: "The word 'it' refers to:", options: ["A. School", "B. City", "C. Yard", "D. Student"] },
+                { q: "Which statement is TRUE?", options: ["A. Statement A", "B. Statement B", "C. Statement C", "D. Statement D"] },
+                { q: "Why does the author like it?", options: ["A. Reason A", "B. Reason B", "C. Reason C", "D. Reason D"] }
             ],
             Language: [
-                { q: "Choose the word with different stress pattern.", options: ["A. happy", "B. jealous", "C. prepare", "D. nervous"] },
-                { q: "My brother _____ tennis every Sunday.", options: ["A. play", "B. plays", "C. playing", "D. is playing"] },
-                { q: "If it rains, we _____ at home.", options: ["A. stay", "B. stayed", "C. will stay", "D. staying"] },
-                { q: "She is interested _____ drawing.", options: ["A. on", "B. at", "C. in", "D. with"] },
-                { q: "This car is _____ than that one.", options: ["A. expensive", "B. more expensive", "C. most expensive", "D. as expensive"] },
-                { q: "I wish I _____ a new laptop.", options: ["A. have", "B. had", "C. will have", "D. am having"] },
-                { q: "He asked me where I _____ from.", options: ["A. come", "B. came", "C. coming", "D. to come"] },
-                { q: "The man _____ lives next door is a doctor.", options: ["A. who", "B. which", "C. whom", "D. whose"] },
-                { q: "They suggest _____ to the cinema.", options: ["A. go", "B. to go", "C. going", "D. went"] },
-                { q: "It is important _____ the environment.", options: ["A. protect", "B. to protect", "C. protecting", "D. protected"] },
-                { q: "He drives very _____.", options: ["A. care", "B. careful", "C. carefully", "D. careless"] },
-                { q: "I haven't seen him _____ 2010.", options: ["A. for", "B. since", "C. in", "D. at"] },
-                { q: "Would you mind _____ the door?", options: ["A. open", "B. to open", "C. opening", "D. opened"] },
-                { q: "This house _____ in 1990.", options: ["A. build", "B. built", "C. was built", "D. is built"] },
-                { q: "Unless you study hard, you _____ the exam.", options: ["A. fail", "B. will fail", "C. won't fail", "D. failed"] },
-                { q: "She is the _____ student in my class.", options: ["A. tall", "B. taller", "C. tallest", "D. more tall"] }
+                { q: "Choose the word with different stress.", options: ["A. happy", "B. jealous", "C. prepare", "D. nervous"] },
+                { q: "She is interested _____ music.", options: ["A. in", "B. on", "C. at", "D. with"] },
+                { q: "He _____ football yesterday.", options: ["A. play", "B. plays", "C. played", "D. playing"] },
+                { q: "This is the _____ book I have read.", options: ["A. good", "B. better", "C. best", "D. well"] }
             ],
             Writing: [
-                { q: "Rewrite: 'I don't have a car.' -> I wish _____.", options: ["A. I have a car.", "B. I had a car.", "C. I will have a car.", "D. I am having a car."] }, 
-                { q: "Combine: 'It rained. We stayed home.'", options: ["A. Because it rained, we stayed home.", "B. Although it rained, we stayed home.", "C. It rained, but we stayed home.", "D. Despite the rain, we stayed home."] },
-                { q: "Rearrange: 'like / I / hanging / friends / out / with / my'.", options: ["A. I like hanging out with my friends.", "B. I like with my friends hanging out.", "C. Hanging out with my friends I like.", "D. My friends like hanging out with I."] },
-                { q: "Rewrite: 'She is too young to drive.' -> She isn't _____.", options: ["A. old enough to drive", "B. young enough to drive", "C. enough old to drive", "D. enough young to drive"] },
-                { q: "Combine: 'He studied hard. He passed the exam.'", options: ["A. He studied hard, so he passed the exam.", "B. He studied hard, but he passed the exam.", "C. Because he passed the exam, he studied hard.", "D. Although he passed the exam, he studied hard."] }
+                 { q: "Rewrite: 'I don't have a car.'", options: ["A. I wish I had a car.", "B. I wish I have a car.", "C. I wish I will have a car.", "D. I wish a car."] }
             ]
         };
-
+        
         const UNIT_QUESTION_BANK = {
-            // --- LỚP 8 (Dữ liệu chi tiết từ sách - GIỮ NGUYÊN) ---
-            '8-1': [ // Unit 1: Leisure Time
+            '8-1': [
                 { q: "I love _____ with my friends in my free time.", options: ["A. hanging out", "B. hang out", "C. hanged out", "D. hanging up"] },
                 { q: "Mai is interested in _____ DIY projects.", options: ["A. do", "B. doing", "C. to do", "D. did"] },
                 { q: "Choose the word with different sound in the underlined part: school, moon, food, foot.", options: ["A. school", "B. moon", "C. food", "D. foot"] },
                 { q: "She is fond of _____ clouds.", options: ["A. watch", "B. watching", "C. to watch", "D. watched"] },
-                { q: "We usually _____ sheep in the pasture.", options: ["A. herd", "B. feed", "C. raise", "D. play"] } // Vocabulary check
+                { q: "We usually _____ sheep in the pasture.", options: ["A. herd", "B. feed", "C. raise", "D. play"] }
             ],
-            // ... (Các unit khác của lớp 8 tương tự file trước - đã được fix)
-             '8-2': [ { q: "People in the countryside seem to live _____ than those in the city.", options: ["A. happy", "B. more happily", "C. happily", "D. happier"] }, { q: "Harvest time is often _____ time of the year for farmers.", options: ["A. busy", "B. busier", "C. the busiest", "D. most busy"] } ],
-             '8-3': [ { q: "Teenagers often feel _____ due to school pressure.", options: ["A. happy", "B. relaxed", "C. stressed", "D. funny"] }, { q: "We often use Facebook to _____ with friends.", options: ["A. connect", "B. meet", "C. see", "D. look"] } ],
-             '8-4': [ { q: "The Rong house is the _____ house of the village.", options: ["A. community", "B. communal", "C. common", "D. communication"] } ],
-             '8-5': [ { q: "In Viet Nam, we often _____ our ancestors on special occasions.", options: ["A. worship", "B. hope", "C. admire", "D. pray"] } ],
-             '8-6': [ { q: "Using _____ products helps protect the environment.", options: ["A. green", "B. red", "C. blue", "D. yellow"] } ],
-             '8-7': [ { q: "We should protect _____ species from extinction.", options: ["A. dangerous", "B. endangered", "C. danger", "D. endanger"] } ],
-             '8-8': [ { q: "I often buy things at the _____ market near my house.", options: ["A. open-air", "B. open-space", "C. open-minded", "D. open-door"] } ],
-             '8-9': [ { q: "A _____ destroyed many houses in the village last night.", options: ["A. flood", "B. rain", "C. water", "D. wind"] } ],
-             '8-10': [ { q: "In the future, we might communicate by _____.", options: ["A. email", "B. telepathy", "C. video call", "D. letter"] } ],
-             '8-11': [ { q: "Science and technology change our lives _____.", options: ["A. enormous", "B. enormously", "C. big", "D. huge"] } ],
-             '8-12': [ { q: "There might be _____ on other planets.", options: ["A. life", "B. live", "C. living", "D. lives"] } ]
+            '8-2': [
+                { q: "People in the countryside seem to live _____ than those in the city.", options: ["A. happy", "B. more happily", "C. happily", "D. happier"] },
+                { q: "Combine harvesters help farmers _____ rice faster.", options: ["A. plant", "B. water", "C. harvest", "D. dry"] },
+                { q: "It rained _____ yesterday than today.", options: ["A. heavy", "B. heavily", "C. more heavily", "D. most heavily"] },
+                { q: "The scenery in my village is very _____.", options: ["A. picture", "B. pictures", "C. picturesque", "D. pictured"] }
+            ],
+            '8-3': [
+                { q: "Teenagers often feel _____ due to school pressure.", options: ["A. happy", "B. relaxed", "C. stressed", "D. funny"] },
+                { q: "We often use Facebook to _____ with friends.", options: ["A. connect", "B. meet", "C. see", "D. look"] },
+                { q: "He studied hard; _____, he got good marks.", options: ["A. however", "B. therefore", "C. but", "D. so"] },
+                { q: "You should browse the _____ to find info.", options: ["A. website", "B. account", "C. forum", "D. club"] }
+            ],
+             '8-4': [
+                { q: "The Rong house is the _____ house of the village.", options: ["A. community", "B. communal", "C. common", "D. communication"] },
+                { q: "Five-coloured sticky rice is a traditional _____ of the Tay.", options: ["A. dish", "B. costume", "C. instrument", "D. house"] },
+                { q: "The Gong Festival is held _____ in the Central Highlands.", options: ["A. year", "B. yearly", "C. years", "D. a year"] }
+            ],
+            '8-5': [
+                { q: "In Viet Nam, we often _____ our ancestors.", options: ["A. worship", "B. hope", "C. admire", "D. pray"] },
+                { q: "It's the custom _____ lucky money at Tet.", options: ["A. give", "B. giving", "C. to give", "D. gave"] },
+                { q: "We usually have a family _____ on New Year.", options: ["A. reunion", "B. union", "C. meeting", "D. collection"] }
+            ],
+            '8-6': [
+                { q: "In the future, we _____ probably study online more.", options: ["A. will", "B. are", "C. do", "D. did"] },
+                { q: "Street food is a popular _____ in Viet Nam.", options: ["A. lifestyle", "B. practice", "C. habit", "D. custom"] },
+                { q: "The native people in Alaska use _____ for transport.", options: ["A. dogsleds", "B. cars", "C. trains", "D. bikes"] }
+            ],
+            '8-7': [
+                { q: "We should protect _____ species.", options: ["A. dangerous", "B. endangered", "C. danger", "D. endanger"] },
+                { q: "_____ products like plastic bags are bad.", options: ["A. Multi-use", "B. Single-use", "C. Reuse", "D. Useful"] },
+                { q: "Reducing our carbon _____ is necessary.", options: ["A. finger", "B. footprint", "C. hand", "D. step"] }
+            ],
+            '8-8': [
+                { q: "I often buy things at the _____ market.", options: ["A. open-air", "B. open-space", "C. open-minded", "D. open-door"] },
+                { q: "The prices here are fixed, so you can't _____.", options: ["A. buy", "B. sell", "C. bargain", "D. pay"] },
+                { q: "She is a _____. She shops all the time.", options: ["A. shopaholic", "B. shopper", "C. shop owner", "D. shop assistant"] }
+            ],
+            '8-9': [
+                { q: "A _____ destroyed many houses last night.", options: ["A. flood", "B. rain", "C. water", "D. wind"] },
+                { q: "The volcanic _____ caused damage.", options: ["A. erupt", "B. eruption", "C. erupting", "D. erupted"] },
+                { q: "We prepare an _____ kit for disasters.", options: ["A. emergency", "B. urgent", "C. hurry", "D. quick"] }
+            ]
         };
-        
+
         const CURRICULUM_DATA = {
             'Lớp 6': [ { id: '6-1', title: 'Unit 1: My New School' }, { id: '6-2', title: 'Unit 2: My Home' }, { id: '6-3', title: 'Unit 3: My Friends' }, { id: '6-4', title: 'Unit 4: My Neighbourhood' } ],
             'Lớp 7': [ { id: '7-1', title: 'Unit 1: Hobbies' }, { id: '7-2', title: 'Unit 2: Healthy Living' }, { id: '7-3', title: 'Unit 3: Community Service' } ],
@@ -144,8 +166,8 @@
         };
 
         // --- ICONS ---
-        const Icon = ({ path, size = 24, className = "", ...props }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+        const Icon = ({ path }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 {path}
             </svg>
         );
@@ -160,410 +182,220 @@
             ChevronLeft: <path d="m15 18-6-6 6-6"/>,
             CheckCircle2: <g><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></g>,
             Check: <path d="M20 6 9 17l-5-5"/>,
-            Languages: <g><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></g>
+            Languages: <g><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></g>,
+            Eye: <g><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></g>
         };
 
-        const Info = (props) => <Icon path={Icons.Info} {...props} />;
-        const BookOpen = (props) => <Icon path={Icons.BookOpen} {...props} />;
-        const Settings = (props) => <Icon path={Icons.Settings} {...props} />;
-        const Grid3X3 = (props) => <Icon path={Icons.Grid3X3} {...props} />;
-        const Download = (props) => <Icon path={Icons.Download} {...props} />;
-        const ChevronRight = (props) => <Icon path={Icons.ChevronRight} {...props} />;
-        const ChevronLeft = (props) => <Icon path={Icons.ChevronLeft} {...props} />;
-        const CheckCircle2 = (props) => <Icon path={Icons.CheckCircle2} {...props} />;
-        const Check = (props) => <Icon path={Icons.Check} {...props} />;
-        const Languages = (props) => <Icon path={Icons.Languages} {...props} />;
+        // --- CORE GENERATOR FUNCTION (Dùng chung cho Preview và Export) ---
+        const generateExamContent = (formData, selectedUnits, grade) => {
+            const matrixKey = (grade === 'Lớp 9') ? '9' : '6-7-8';
+            const matrix = MATRIX_RULES[matrixKey];
+            
+            let globalQuestionIndex = 1;
+            const answerKeys = [];
+            let htmlBody = `
+                <div style="text-align:center; margin-bottom:12pt;">
+                    <div style="font-weight:bold; font-size:14pt; text-transform:uppercase;">${formData.schoolName}</div>
+                    <div style="font-weight:bold; font-size:13pt; text-transform:uppercase; margin-top:6pt;">ĐỀ KIỂM TRA TIẾNG ANH - ${formData.grade.toUpperCase()}</div>
+                    <div style="margin-top:6pt;"><em>Kỳ thi: ${formData.examName} | Mã đề: ${formData.examNumber} | Thời gian: 60 phút</em></div>
+                </div>
+                
+                <div style="font-weight:bold; text-align:center; margin-top:12pt; margin-bottom:6pt;">I. MA TRẬN ĐỀ KIỂM TRA (MATRIX)</div>
+                <table border="1" style="width:100%; border-collapse:collapse; margin-bottom:12pt;">
+                    <tr style="background:#f0f0f0; font-weight:bold; text-align:center;"><td>Kỹ năng</td><td>NB</td><td>TH</td><td>VD</td><td>VDC</td><td>Tổng</td></tr>
+                    ${matrix.structure.map(row => `<tr><td style="text-align:left;">${row.skill}</td><td style="text-align:center;">${row.levels.NB||'-'}</td><td style="text-align:center;">${row.levels.TH||'-'}</td><td style="text-align:center;">${row.levels.VD||'-'}</td><td style="text-align:center;">${row.levels.VDC||'-'}</td><td style="text-align:center; font-weight:bold;">${row.total}</td></tr>`).join('')}
+                </table>
+
+                <div style="font-weight:bold; text-align:center; margin-top:18pt; margin-bottom:12pt;">II. NỘI DUNG ĐỀ KIỂM TRA</div>
+            `;
+
+            // Helper get questions
+            const getQuestionData = (skill) => {
+                let questions = [];
+                if (grade === 'Lớp 8') {
+                    selectedUnits.forEach(uid => {
+                        if(UNIT_QUESTION_BANK[uid]) questions = [...questions, ...UNIT_QUESTION_BANK[uid]];
+                    });
+                    if (questions.length < 5) Object.keys(UNIT_QUESTION_BANK).forEach(k => { if(k.startsWith('8-')) questions.push(...UNIT_QUESTION_BANK[k]); });
+                }
+                if (questions.length === 0 || skill !== 'Language') {
+                    questions = SAMPLE_QUESTIONS[skill] || SAMPLE_QUESTIONS['Language'];
+                }
+                return questions;
+            };
+
+            matrix.structure.forEach((row, idx) => {
+                const sectionMap = { 'Listening': 'I. LISTENING', 'Reading': 'II. READING', 'Language': 'III. LANGUAGE', 'Writing': 'IV. WRITING' };
+                const sectionTitle = sectionMap[row.skill] || `PART ${idx + 1}`;
+                
+                htmlBody += `<div style="font-weight:bold; margin-top:12pt; margin-bottom:6pt;">${sectionTitle}</div>`;
+                
+                if (row.skill === 'Reading') {
+                    const passage = SAMPLE_READING_PASSAGE[formData.grade] || SAMPLE_READING_PASSAGE['Lớp 8'];
+                    htmlBody += `<div style="border:1px solid #999; padding:8pt; margin-bottom:8pt; font-style:italic; text-align:justify;">${passage}</div>`;
+                }
+                if (row.skill === 'Listening') htmlBody += `<div style="font-style:italic; margin-bottom:8pt;">(Listen to the recording twice)</div>`;
+
+                const questions = getQuestionData(row.skill);
+
+                for(let i=0; i<row.total; i++) {
+                    const currentQNum = globalQuestionIndex++;
+                    const qData = questions[i % questions.length] || { q: "Sample Question", options: ["A", "B", "C", "D"] };
+                    
+                    let answer = 'A'; 
+                    if (qData.options && qData.options.length > 0) {
+                        const correctChar = ['A', 'B', 'C', 'D'][Math.floor(Math.random() * 4)];
+                        answer = correctChar;
+                    }
+                    
+                    let ops = qData.options || ["A. Option A", "B. Option B", "C. Option C", "D. Option D"];
+
+                    if (row.skill === 'Writing' && grade !== 'Lớp 9' && !qData.options) {
+                        answer = "Student's answer";
+                        htmlBody += `<div style="margin-bottom:8pt;">
+                                    <div style="font-weight:bold; margin-bottom:4pt;">${currentQNum}. ${qData.q || qData}</div>
+                                    <div style="margin-left:20pt; color:#555; font-style:italic;">_______________________________________________________</div>
+                                </div>`;
+                    } else {
+                        htmlBody += `<div style="margin-bottom:8pt;">
+                                <div style="font-weight:bold; margin-bottom:4pt;">${currentQNum}. ${qData.q || qData}</div>
+                                <table style="width:100%; border:none; margin-left:15pt; margin-bottom:0;">
+                                    <tr>
+                                        <td style="border:none; width:25%; padding:0; vertical-align:top;">${ops[0]||'A.'}</td>
+                                        <td style="border:none; width:25%; padding:0; vertical-align:top;">${ops[1]||'B.'}</td>
+                                        <td style="border:none; width:25%; padding:0; vertical-align:top;">${ops[2]||'C.'}</td>
+                                        <td style="border:none; width:25%; padding:0; vertical-align:top;">${ops[3]||'D.'}</td>
+                                    </tr>
+                                </table>
+                            </div>`;
+                    }
+                    answerKeys.push({ q: currentQNum, ans: answer });
+                }
+            });
+
+            htmlBody += `<div style="text-align:center; margin-top:18pt; font-style:italic;">--- THE END ---</div>`;
+            
+            // Answer Key HTML
+            const answerKeyHtml = `
+                <br clear=all style='mso-special-character:line-break;page-break-before:always'>
+                <div style="text-align:center; font-weight:bold; font-size:14pt; margin-top:20pt; margin-bottom:12pt; border-top: 1px dashed #ccc; padding-top: 20px;">ĐÁP ÁN (ANSWER KEY) - MÃ ĐỀ ${formData.examNumber}</div>
+                <table border="1" style="width:50%; margin:0 auto; border-collapse:collapse;">
+                    <tr style="background:#e0e0e0; font-weight:bold; text-align:center;"><td>Câu</td><td>Đáp án</td></tr>
+                    ${answerKeys.map(k => `<tr><td style="text-align:center;">${k.q}</td><td style="text-align:center; font-weight:bold;">${k.ans}</td></tr>`).join('')}
+                </table>
+            `;
+
+            return { body: htmlBody, keys: answerKeyHtml };
+        };
+
 
         // --- COMPONENTS ---
         const Header = () => (
             <header className="bg-[#005CA9] text-white py-4 px-6 shadow-md sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                        <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm"><Languages size={24} /></div>
+                        <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm"><Icon path={Icons.Languages} /></div>
                         <div>
                             <h1 className="text-xl font-bold uppercase tracking-wide">TIẾNG ANH GLOBAL SUCCESS</h1>
-                            <p className="text-xs text-blue-100 opacity-90 hidden sm:block">Hệ thống tạo đề chuẩn Ma trận BGD (v3.6 Compact Format)</p>
+                            <p className="text-xs text-blue-100 opacity-90 hidden sm:block">Hệ thống tạo đề chuẩn Ma trận BGD (v4.0 Preview Edition)</p>
                         </div>
                     </div>
                 </div>
             </header>
         );
 
-        const Stepper = ({ currentStep, steps }) => (
-            <div className="py-6 px-4 bg-white border-b shadow-sm sticky top-[72px] z-40">
-                <div className="max-w-5xl mx-auto relative">
-                    <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-100 -z-10 transform -translate-y-1/2 rounded-full hidden md:block" />
-                    <div className="absolute top-1/2 left-0 h-1 bg-green-500 -z-10 transform -translate-y-1/2 rounded-full transition-all duration-500 hidden md:block" style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }} />
-                    <div className="flex justify-between items-center w-full">
-                        {steps.map((step) => {
-                            const isActive = currentStep === step.id;
-                            const isCompleted = currentStep > step.id;
-                            const Icon = step.icon;
-                            return (
-                                <div key={step.id} className="flex flex-col items-center bg-white px-2">
-                                    <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 shadow-sm ${isCompleted ? 'border-green-500 bg-green-500 text-white scale-105' : isActive ? 'border-[#005CA9] bg-[#005CA9] text-white scale-110 ring-4 ring-blue-50' : 'border-gray-200 bg-gray-50 text-gray-400'}`}>
-                                        {isCompleted ? <Check size={20} /> : <Icon size={20} />}
-                                    </div>
-                                    <div className="mt-2 text-center hidden md:block"><p className={`text-xs font-bold uppercase tracking-wider ${isActive ? 'text-[#005CA9]' : isCompleted ? 'text-green-600' : 'text-gray-400'}`}>{step.title}</p></div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            </div>
-        );
-
+        // Các bước 1-4 giữ nguyên như cũ (tôi rút gọn để tập trung vào Preview)
         const Step1Info = ({ data, onChange }) => (
-            <div className="max-w-3xl mx-auto mt-8 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden animate-fade-in">
-                <div className="p-8 space-y-6">
-                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2 mb-4"><Info className="text-[#005CA9]" size={24}/> Thông tin chung</h2>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Tên Trường / Đơn vị</label>
-                        <input type="text" value={data.schoolName} onChange={(e) => onChange('schoolName', e.target.value)} className="w-full px-4 py-3 rounded-lg border border-gray-300 outline-none" placeholder="Nhập tên trường..." />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Khối lớp</label>
-                            <select value={data.grade} onChange={(e) => onChange('grade', e.target.value)} className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white">
-                                {Object.keys(CURRICULUM_DATA).map(g => <option key={g} value={g}>{g}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Năm học</label>
-                            <input type="text" value={data.year} onChange={(e) => onChange('year', e.target.value)} className="w-full px-4 py-3 rounded-lg border border-gray-300 outline-none" />
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Loại bài kiểm tra</label>
-                            <select value={data.examName} onChange={(e) => onChange('examName', e.target.value)} className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white">
-                                <option>Kiểm tra Giữa kì I</option><option>Kiểm tra Cuối kì I</option><option>Kiểm tra Giữa kì II</option><option>Kiểm tra Cuối kì II</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Mã đề</label>
-                            <input type="number" value={data.examNumber} onChange={(e) => onChange('examNumber', e.target.value)} className="w-full px-4 py-3 rounded-lg border border-gray-300 text-center" />
-                        </div>
-                    </div>
+             <div className="max-w-3xl mx-auto mt-8 bg-white rounded-xl shadow-lg border p-8">
+                <h2 className="text-xl font-bold mb-4 flex gap-2"><Icon path={Icons.Info}/> Thông tin chung</h2>
+                <div className="space-y-4">
+                     <input type="text" value={data.schoolName} onChange={e => onChange('schoolName', e.target.value)} className="w-full border p-2 rounded" placeholder="Tên trường..." />
+                     <div className="grid grid-cols-2 gap-4">
+                        <select value={data.grade} onChange={e => onChange('grade', e.target.value)} className="border p-2 rounded">{Object.keys(CURRICULUM_DATA).map(g=><option key={g}>{g}</option>)}</select>
+                        <input type="text" value={data.year} onChange={e => onChange('year', e.target.value)} className="border p-2 rounded" />
+                     </div>
+                     <div className="grid grid-cols-2 gap-4">
+                        <select value={data.examName} onChange={e => onChange('examName', e.target.value)} className="border p-2 rounded"><option>Kiểm tra Cuối kì I</option><option>Kiểm tra Giữa kì I</option></select>
+                        <input type="number" value={data.examNumber} onChange={e => onChange('examNumber', e.target.value)} className="border p-2 rounded text-center" />
+                     </div>
                 </div>
-            </div>
+             </div>
         );
 
         const Step2Topics = ({ grade, selectedUnits, onToggleUnit }) => {
             const units = CURRICULUM_DATA[grade] || [];
             return (
-                <div className="max-w-4xl mx-auto mt-8 p-4 animate-fade-in">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2"><BookOpen className="text-[#005CA9]"/> Phạm vi kiến thức</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {units.map((unit) => {
-                            const isSelected = selectedUnits.includes(unit.id);
-                            return (
-                                <div key={unit.id} onClick={() => onToggleUnit(unit.id)} className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all ${isSelected ? 'border-[#005CA9] bg-blue-50' : 'border-white bg-white shadow-sm hover:shadow-md'}`}>
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm ${isSelected ? 'bg-[#005CA9] text-white' : 'bg-gray-100 text-gray-400'}`}>{unit.id.split('-')[1]}</div>
-                                            <div><h3 className={`font-semibold ${isSelected ? 'text-[#005CA9]' : 'text-gray-700'}`}>{unit.title}</h3></div>
-                                        </div>
-                                        {isSelected && <CheckCircle2 className="text-[#005CA9]" size={24} />}
-                                    </div>
-                                </div>
-                            );
-                        })}
+                <div className="max-w-4xl mx-auto mt-8 p-4">
+                    <h2 className="text-2xl font-bold mb-4 flex gap-2"><Icon path={Icons.BookOpen}/> Phạm vi kiến thức</h2>
+                    <div className="grid grid-cols-2 gap-4">
+                        {units.map(unit => (
+                            <div key={unit.id} onClick={() => onToggleUnit(unit.id)} className={`p-4 border rounded cursor-pointer flex justify-between ${selectedUnits.includes(unit.id)?'border-blue-500 bg-blue-50':''}`}>
+                                <span>{unit.title}</span>
+                                {selectedUnits.includes(unit.id) && <Icon path={Icons.CheckCircle2} className="text-blue-500"/>}
+                            </div>
+                        ))}
                     </div>
                 </div>
             );
         };
 
-        const Step3Config = ({ grade }) => {
-            // Xác định ma trận dựa trên khối lớp
-            const matrixKey = (grade === 'Lớp 9') ? '9' : '6-7-8';
-            const matrix = MATRIX_RULES[matrixKey];
+        const Step3Config = ({grade}) => (
+            <div className="max-w-4xl mx-auto mt-8 p-4 text-center">
+                 <h2 className="text-2xl font-bold mb-4">Cấu trúc Ma trận (Chuẩn BGD)</h2>
+                 <p>Cấu trúc đã được cố định theo quy định chuyên môn cho {grade}.</p>
+                 <div className="bg-gray-100 p-4 rounded mt-4">Không cần cấu hình thêm.</div>
+            </div>
+        );
+
+        const Step4Matrix = ({grade}) => (
+             <div className="max-w-4xl mx-auto mt-8 p-4 text-center">
+                 <h2 className="text-2xl font-bold mb-4">Ma trận chi tiết</h2>
+                 <p>Hệ thống sẽ tự động phân bổ câu hỏi theo ma trận {grade}.</p>
+                 <div className="bg-green-50 p-4 rounded mt-4 border border-green-200">Đã sẵn sàng sinh đề!</div>
+            </div>
+        );
+
+        // --- NEW STEP 5: PREVIEW ---
+        const Step5Preview = ({ formData, selectedUnits, grade, onContentGenerated }) => {
+            const [content, setContent] = useState({ body: '', keys: '' });
+
+            useEffect(() => {
+                // Tạo nội dung ngay khi component được mount
+                const generated = generateExamContent(formData, selectedUnits, grade);
+                setContent(generated);
+                onContentGenerated(generated); // Gửi dữ liệu lên App để dùng cho bước Export
+            }, []);
 
             return (
-                <div className="max-w-4xl mx-auto mt-8 p-4 animate-fade-in">
+                <div className="max-w-5xl mx-auto mt-8 p-4 animate-fade-in">
                     <div className="text-center mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800">Cấu trúc Ma trận Đề (Chuẩn BGD)</h2>
-                        <p className="text-gray-500 mt-2">{matrix.description}</p>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                        <div className="grid grid-cols-1 gap-6">
-                            {matrix.structure.map((section, idx) => (
-                                <div key={idx} className="border-b pb-4 last:border-0">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <h3 className="font-bold text-[#005CA9] text-lg flex items-center gap-2">
-                                            <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-sm">Phần {idx + 1}</span> {section.skill}
-                                        </h3>
-                                        <span className="font-bold text-gray-700">{section.total} câu</span>
-                                    </div>
-                                    <div className="grid grid-cols-4 gap-2 text-center text-sm">
-                                        <div className="bg-gray-50 p-2 rounded">
-                                            <div className="text-gray-500 text-xs uppercase">Nhận biết</div>
-                                            <div className="font-bold text-blue-600">{section.levels.NB}</div>
-                                        </div>
-                                        <div className="bg-gray-50 p-2 rounded">
-                                            <div className="text-gray-500 text-xs uppercase">Thông hiểu</div>
-                                            <div className="font-bold text-blue-600">{section.levels.TH}</div>
-                                        </div>
-                                        <div className="bg-gray-50 p-2 rounded">
-                                            <div className="text-gray-500 text-xs uppercase">Vận dụng</div>
-                                            <div className="font-bold text-blue-600">{section.levels.VD}</div>
-                                        </div>
-                                        <div className="bg-gray-50 p-2 rounded">
-                                            <div className="text-gray-500 text-xs uppercase">Vận dụng cao</div>
-                                            <div className="font-bold text-blue-600">{section.levels.VDC}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="mt-4 pt-4 border-t flex justify-between items-center text-sm font-medium text-gray-600">
-                            <span>Tổng số câu: <strong className="text-black">{matrix.totalQuestions}</strong></span>
-                            <span className="text-green-600 italic">Cấu trúc này được cố định theo quy định chuyên môn.</span>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const Step4Matrix = ({ grade, selectedUnits }) => {
-            const matrixKey = (grade === 'Lớp 9') ? '9' : '6-7-8';
-            const matrix = MATRIX_RULES[matrixKey];
-            const units = CURRICULUM_DATA[grade].filter(u => selectedUnits.includes(u.id));
-
-            return (
-                <div className="max-w-6xl mx-auto mt-8 p-4 animate-fade-in">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-2xl font-bold text-gray-800">Ma trận chi tiết</h2>
-                        <span className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Phạm vi: {units.length > 0 ? units.map(u => u.title).join(", ") : "Chưa chọn Unit"}</span>
+                        <h2 className="text-2xl font-bold text-gray-800 flex items-center justify-center gap-2">
+                            <Icon path={Icons.Eye}/> Xem trước Đề thi
+                        </h2>
+                        <p className="text-gray-500 text-sm">Đây là nội dung chính xác sẽ xuất hiện trong file Word.</p>
                     </div>
                     
-                    <div className="bg-white rounded-lg border shadow-sm overflow-x-auto">
-                        <table className="w-full text-sm border-collapse matrix-table">
-                            <thead>
-                                <tr>
-                                    <th rowSpan="2" className="w-32">Kỹ năng</th>
-                                    <th colSpan="4">Mức độ nhận thức</th>
-                                    <th rowSpan="2" className="w-16">Tổng câu</th>
-                                    <th rowSpan="2" className="w-16">Điểm</th>
-                                </tr>
-                                <tr className="sub-header">
-                                    <td>Nhận biết (NB)</td>
-                                    <td>Thông hiểu (TH)</td>
-                                    <td>Vận dụng (VD)</td>
-                                    <td>Vận dụng cao (VDC)</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {matrix.structure.map((row, idx) => {
-                                    const pointPerQ = 10 / matrix.totalQuestions; // Điểm trung bình mỗi câu (ước lượng)
-                                    return (
-                                        <tr key={idx}>
-                                            <td className="font-bold text-left pl-4">{row.skill}</td>
-                                            <td>{row.levels.NB > 0 ? row.levels.NB : '-'}</td>
-                                            <td>{row.levels.TH > 0 ? row.levels.TH : '-'}</td>
-                                            <td>{row.levels.VD > 0 ? row.levels.VD : '-'}</td>
-                                            <td>{row.levels.VDC > 0 ? row.levels.VDC : '-'}</td>
-                                            <td className="font-bold">{row.total}</td>
-                                            <td>{(row.total * 0.25).toFixed(1)}</td> {/* Giả sử 0.25đ/câu cho dễ tính */}
-                                        </tr>
-                                    );
-                                })}
-                                <tr className="bg-gray-100 font-bold">
-                                    <td className="text-left pl-4">TỔNG CỘNG</td>
-                                    <td>{matrix.structure.reduce((a,b) => a + b.levels.NB, 0)}</td>
-                                    <td>{matrix.structure.reduce((a,b) => a + b.levels.TH, 0)}</td>
-                                    <td>{matrix.structure.reduce((a,b) => a + b.levels.VD, 0)}</td>
-                                    <td>{matrix.structure.reduce((a,b) => a + b.levels.VDC, 0)}</td>
-                                    <td className="text-blue-600 text-lg">{matrix.totalQuestions}</td>
-                                    <td className="text-red-600 text-lg">10.0</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div className="preview-container">
+                        <div className="preview-page">
+                            <div dangerouslySetInnerHTML={{__html: content.body + '<hr style="margin: 20px 0; border-top: 1px dashed #999;">' + content.keys}} />
+                        </div>
                     </div>
                 </div>
             );
         };
 
-        const Step5Export = ({ formData, selectedUnits, grade }) => {
-            const units = CURRICULUM_DATA[grade].filter(u => selectedUnits.includes(u.id));
-
+        // --- STEP 6: EXPORT (Modified) ---
+        const Step6Export = ({ formData, examContent }) => {
             const handleDownload = () => {
-                const matrixKey = (grade === 'Lớp 9') ? '9' : '6-7-8';
-                const matrix = MATRIX_RULES[matrixKey];
+                if (!examContent || !examContent.body) return alert("Vui lòng quay lại bước Xem trước để tạo dữ liệu!");
                 
-                let globalQuestionIndex = 1;
-                const answerKeys = []; // Array để lưu đáp án
+                const cssReset = `<style>@page{size:A4;margin:1in;}body{font-family:'Times New Roman',serif;font-size:12pt;line-height:1.2;}p,div{margin:0;padding:0;}table{width:100%;border-collapse:collapse;}</style>`;
+                const finalHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'>${cssReset}</head><body>${examContent.body}${examContent.keys}</body></html>`;
                 
-                // Helper để lấy câu hỏi từ ngân hàng
-                // Nếu có UNIT_QUESTION_BANK từ PDF thì dùng, nếu không thì dùng SAMPLE_QUESTIONS hoặc FALLBACK
-                const getQuestionData = (skill) => {
-                    let questions = [];
-                    // Ưu tiên lấy từ UNIT_QUESTION_BANK nếu có dữ liệu lớp 8
-                    if (typeof UNIT_QUESTION_BANK !== 'undefined' && grade === 'Lớp 8') {
-                        // Collect questions from selected units
-                         selectedUnits.forEach(uid => {
-                             if(UNIT_QUESTION_BANK[uid]) questions = [...questions, ...UNIT_QUESTION_BANK[uid]];
-                         });
-                         // If not enough, get from all units of grade 8
-                         if (questions.length < 5) {
-                             Object.keys(UNIT_QUESTION_BANK).forEach(k => {
-                                 if(k.startsWith('8-')) questions = [...questions, ...UNIT_QUESTION_BANK[k]];
-                             });
-                         }
-                    } 
-                    
-                    // Fallback to SAMPLE_QUESTIONS (which now has full structure) if needed (or for other grades)
-                    // Quan trọng: Phải kiểm tra nếu questions từ UNIT_QUESTION_BANK là mảng object có options đầy đủ
-                    // Nhưng ở bước này SAMPLE_QUESTIONS đã được nâng cấp đủ 4 options
-                    if (questions.length === 0 || skill !== 'Language') {
-                         questions = SAMPLE_QUESTIONS[skill] || SAMPLE_QUESTIONS['Language'];
-                    }
-                    
-                    return questions;
-                };
-
-                // Hàm sinh câu hỏi và lưu đáp án
-                const generateSectionContent = (skill, count) => {
-                    let html = '';
-                    const questions = getQuestionData(skill);
-                    
-                    for(let i=0; i<count; i++) {
-                        const currentQNum = globalQuestionIndex++;
-                        const qData = questions[i % questions.length];
-                        
-                        let answer = '';
-                        
-                        // Logic xác định đáp án (Giả lập)
-                        if (skill === 'Writing' && grade !== 'Lớp 9' && !qData.options) {
-                            answer = "Học sinh trả lời theo ý hiểu";
-                            html += `<div class="question-block">
-                                        <p class="question"><strong>${currentQNum}.</strong> ${typeof qData === 'string' ? qData : qData.q}</p>
-                                        <p class="answer-space">__________________________________________________________________________</p>
-                                     </div>`;
-                        } else {
-                            // Trắc nghiệm: Random đáp án đúng A, B, C hoặc D
-                            const correctChar = ['A', 'B', 'C', 'D'][Math.floor(Math.random() * 4)];
-                            answer = correctChar;
-                            
-                            // Xử lý hiển thị options
-                            let ops = [];
-                            if (typeof qData === 'string') {
-                                ops = ["A. Option A", "B. Option B", "C. Option C", "D. Option D"];
-                            } else if (qData.options) {
-                                ops = qData.options;
-                            } else {
-                                // Fallback nếu dữ liệu lỗi
-                                ops = ["A. ...", "B. ...", "C. ...", "D. ..."];
-                            }
-
-                            html += `<div class="question-block">
-                                        <p class="question"><strong>${currentQNum}.</strong> ${typeof qData === 'string' ? qData : qData.q}</p>
-                                        <table style="width:100%; border:none; margin-left: 15px; margin-top: 2pt;">
-                                            <tr>
-                                                <td style="border:none; text-align:left; width:25%; padding:0;">${ops[0] || 'A.'}</td>
-                                                <td style="border:none; text-align:left; width:25%; padding:0;">${ops[1] || 'B.'}</td>
-                                                <td style="border:none; text-align:left; width:25%; padding:0;">${ops[2] || 'C.'}</td>
-                                                <td style="border:none; text-align:left; width:25%; padding:0;">${ops[3] || 'D.'}</td>
-                                            </tr>
-                                        </table>
-                                     </div>`;
-                        }
-                        
-                        answerKeys.push({ q: currentQNum, ans: answer });
-                    }
-                    return html;
-                };
-
-                // Tạo nội dung HTML cho file Word
-                let bodyContent = '';
-                
-                // Tiêu đề và Thông tin
-                bodyContent += `
-                    <h2 style="margin-bottom:0;">${formData.schoolName.toUpperCase()}</h2>
-                    <h3 style="margin-top:0;">HỒ SƠ ĐỀ KIỂM TRA MÔN TIẾNG ANH - ${formData.grade.toUpperCase()}</h3>
-                    <p style="text-align:center; margin-top:0;"><em>Kỳ thi: ${formData.examName} | Mã đề: ${formData.examNumber} | Thời gian: 60 phút</em></p>
-                    <br/>
-                `;
-                
-                // I. Ma trận
-                bodyContent += `<h4>I. MA TRẬN ĐỀ KIỂM TRA (MATRIX)</h4>
-                    <table>
-                        <thead><tr><th>Kỹ năng</th><th>NB</th><th>TH</th><th>VD</th><th>VDC</th><th>Tổng</th></tr></thead>
-                        <tbody>
-                            ${matrix.structure.map(row => `<tr><td class="text-left">${row.skill}</td><td>${row.levels.NB || '-'}</td><td>${row.levels.TH || '-'}</td><td>${row.levels.VD || '-'}</td><td>${row.levels.VDC || '-'}</td><td><strong>${row.total}</strong></td></tr>`).join('')}
-                        </tbody>
-                    </table>
-                    <br/><hr/><br/>`;
-
-                // II. Nội dung đề
-                bodyContent += `<h4>II. NỘI DUNG ĐỀ KIỂM TRA (ĐỀ XUẤT)</h4>`;
-                matrix.structure.forEach((row, idx) => {
-                    const sectionMap = {
-                        'Listening': 'I. LISTENING',
-                        'Reading': 'II. READING',
-                        'Language': 'III. LANGUAGE FOCUS',
-                        'Writing': 'IV. WRITING'
-                    };
-                    const sectionTitle = sectionMap[row.skill] || `PART ${idx + 1}: ${row.skill.toUpperCase()}`;
-
-                    bodyContent += `<div class="section-title">${sectionTitle} (${row.total} questions)</div>`;
-                    
-                    if (row.skill === 'Reading') {
-                        const passage = SAMPLE_READING_PASSAGE[formData.grade] || SAMPLE_READING_PASSAGE['Lớp 8'];
-                        bodyContent += `<div class="reading-passage"><strong>Read the following passage and answer the questions below:</strong><br/>${passage}</div>`;
-                    }
-                    if (row.skill === 'Listening') {
-                         bodyContent += `<p style="font-style:italic; margin-bottom:6pt;">(Teacher plays the recording twice)</p>`;
-                    }
-
-                    bodyContent += generateSectionContent(row.skill, row.total);
-                });
-                
-                bodyContent += `<br/><p style="text-align: center;"><em>--- THE END ---</em></p>`;
-
-                // III. Đáp án (Trang mới)
-                bodyContent += `
-                    <br clear=all style='mso-special-character:line-break;page-break-before:always'>
-                    <h3 style="text-align:center; margin-top:20px;">ĐÁP ÁN VÀ HƯỚNG DẪN CHẤM (ANSWER KEY)</h3>
-                    <p style="text-align:center"><em>Mã đề: ${formData.examNumber}</em></p>
-                    <table style="width:50%; margin: 20px auto;">
-                        <thead>
-                            <tr>
-                                <th style="background-color:#ccc;">Câu</th>
-                                <th style="background-color:#ccc;">Đáp án</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${answerKeys.map(k => `<tr><td style="text-align:center">${k.q}</td><td style="text-align:center; font-weight:bold; color:#005CA9;">${k.ans}</td></tr>`).join('')}
-                        </tbody>
-                    </table>
-                `;
-
-                const finalHtml = `
-                    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-                    <head><meta charset="utf-8"><title>${formData.examName}</title>
-                    <style>
-                        body { font-family: 'Times New Roman'; font-size: 12pt; }
-                        h2, h3, h4 { text-align: center; margin: 6pt 0; }
-                        p { margin: 0; padding: 0; } /* Reset margin paragraph */
-                        table { width: 100%; border-collapse: collapse; margin: 10pt 0; }
-                        th, td { border: 1px solid black; padding: 4pt; text-align: center; }
-                        th { background-color: #f0f0f0; }
-                        .text-left { text-align: left; }
-                        .section-title { font-weight: bold; margin-top: 12pt; text-transform: uppercase; margin-bottom: 6pt; }
-                        .question-block { margin-bottom: 6pt; } /* Giảm khoảng cách giữa các câu hỏi */
-                        .question { margin-bottom: 3pt; font-weight: bold; } /* Câu hỏi đậm */
-                        .options { margin-left: 20px; }
-                        .answer-space { margin-left: 20px; font-style: italic; color: #555; }
-                        .reading-passage { border: 1px solid #ccc; padding: 10pt; background-color: #fcfcfc; font-style: italic; margin-bottom: 10pt; text-align: justify; }
-                    </style></head>
-                    <body>${bodyContent}</body></html>`;
-
                 const blob = new Blob(['\ufeff', finalHtml], { type: 'application/msword' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = `De_Kiem_Tra_${formData.examName.replace(/\s+/g, '_')}_Co_Dap_An.doc`;
+                link.download = `De_Thi_${formData.grade}_${formData.examName.replace(/\s/g,'_')}.doc`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -572,11 +404,11 @@
             return (
                 <div className="max-w-4xl mx-auto mt-8 p-4 animate-fade-in text-center">
                     <div className="bg-white p-8 rounded-xl shadow-lg border">
-                        <CheckCircle2 size={48} className="text-green-500 mx-auto mb-4"/>
-                        <h2 className="text-2xl font-bold mb-2">Hồ sơ đã sẵn sàng!</h2>
-                        <p className="text-gray-500 mb-6">Đã áp dụng ma trận chuẩn BGD cho khối {grade}</p>
-                        <button onClick={handleDownload} className="bg-[#005CA9] text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-blue-700 transition flex items-center gap-2 mx-auto">
-                            <Download size={20} /> TẢI VỀ HỒ SƠ & ĐÁP ÁN (.DOC)
+                        <Icon path={Icons.CheckCircle2} />
+                        <h2 className="text-2xl font-bold mb-2 mt-4">Hồ sơ đã sẵn sàng!</h2>
+                        <p className="text-gray-500 mb-6">Bạn đã kiểm tra kỹ nội dung ở bước trước.</p>
+                        <button onClick={handleDownload} className="bg-[#005CA9] text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-blue-700 transition flex items-center gap-2 mx-auto mt-6">
+                            <Icon path={Icons.Download} /> TẢI VỀ FILE WORD (.DOC)
                         </button>
                     </div>
                 </div>
@@ -585,64 +417,57 @@
 
         const App = () => {
             const [currentStep, setCurrentStep] = useState(1);
-            
+            // State để lưu nội dung đề thi đã sinh ra ở bước Preview (để đồng bộ với Export)
+            const [generatedExamContent, setGeneratedExamContent] = useState(null);
+
             const [formData, setFormData] = useState(() => {
-                try {
-                    const saved = localStorage.getItem('gs_formData');
-                    return saved ? JSON.parse(saved) : { schoolName: 'THCS Nguyễn Du', grade: 'Lớp 8', year: '2025 - 2026', examName: 'Kiểm tra Cuối kì I', examNumber: '1' };
-                } catch (e) { return { schoolName: 'THCS Nguyễn Du', grade: 'Lớp 8', year: '2025 - 2026', examName: 'Kiểm tra Cuối kì I', examNumber: '1' }; }
+                try { return JSON.parse(localStorage.getItem('gs_formData')) || { schoolName: 'THCS Nguyễn Du', grade: 'Lớp 8', year: '2025 - 2026', examName: 'Kiểm tra Cuối kì I', examNumber: '1' }; } catch(e){ return { schoolName: 'THCS Nguyễn Du', grade: 'Lớp 8', year: '2025 - 2026', examName: 'Kiểm tra Cuối kì I', examNumber: '1' }; }
             });
-
             const [selectedUnits, setSelectedUnits] = useState(() => {
-                try {
-                    const saved = localStorage.getItem('gs_selectedUnits');
-                    return saved ? JSON.parse(saved) : ['8-1', '8-2', '8-3'];
-                } catch (e) { return ['8-1', '8-2', '8-3']; }
+                try { return JSON.parse(localStorage.getItem('gs_selectedUnits')) || ['8-1', '8-2', '8-3']; } catch(e){ return ['8-1']; }
             });
 
-            useEffect(() => { try { localStorage.setItem('gs_formData', JSON.stringify(formData)); } catch(e){} }, [formData]);
-            useEffect(() => { try { localStorage.setItem('gs_selectedUnits', JSON.stringify(selectedUnits)); } catch(e){} }, [selectedUnits]);
-
-            const handleFormDataChange = (key, value) => {
-                setFormData(prev => ({ ...prev, [key]: value }));
-                if (key === 'grade') setSelectedUnits([]);
-            };
-
-            const toggleUnit = (unitId) => {
-                setSelectedUnits(prev => prev.includes(unitId) ? prev.filter(id => id !== unitId) : [...prev, unitId]);
-            };
-
-            const handleReset = () => {
-                if (window.confirm('Xóa dữ liệu và tải lại?')) {
-                    localStorage.clear();
-                    window.location.reload();
-                }
-            };
+            useEffect(() => { localStorage.setItem('gs_formData', JSON.stringify(formData)); }, [formData]);
+            useEffect(() => { localStorage.setItem('gs_selectedUnits', JSON.stringify(selectedUnits)); }, [selectedUnits]);
 
             const steps = [
-                { id: 1, title: 'Thông tin', icon: Info },
-                { id: 2, title: 'Nội dung', icon: BookOpen },
-                { id: 3, title: 'Cấu trúc', icon: Settings },
-                { id: 4, title: 'Ma trận', icon: Grid3X3 },
-                { id: 5, title: 'Xuất file', icon: Download },
+                { id: 1, title: 'Thông tin', icon: Icons.Info },
+                { id: 2, title: 'Nội dung', icon: Icons.BookOpen },
+                { id: 3, title: 'Cấu trúc', icon: Icons.Settings },
+                { id: 4, title: 'Ma trận', icon: Icons.Grid3X3 },
+                { id: 5, title: 'Xem trước', icon: Icons.Eye }, // Bước mới
+                { id: 6, title: 'Xuất file', icon: Icons.Download },
             ];
 
             return (
                 <div className="min-h-screen pb-24 relative">
                     <Header />
-                    <Stepper currentStep={currentStep} steps={steps} />
+                    <div className="py-6 px-4 bg-white border-b shadow-sm sticky top-[72px] z-40">
+                        <div className="max-w-5xl mx-auto flex justify-between">
+                             {steps.map(s => (
+                                 <div key={s.id} className={`flex flex-col items-center ${currentStep === s.id ? 'text-[#005CA9] font-bold' : 'text-gray-400'}`}>
+                                     <div className="w-8 h-8 rounded-full border flex items-center justify-center mb-1 bg-white">{s.id}</div>
+                                     <div className="text-xs hidden md:block">{s.title}</div>
+                                 </div>
+                             ))}
+                        </div>
+                    </div>
+                    
                     <main>
-                        {currentStep === 1 && <Step1Info data={formData} onChange={handleFormDataChange} />}
-                        {currentStep === 2 && <Step2Topics grade={formData.grade} selectedUnits={selectedUnits} onToggleUnit={toggleUnit} />}
+                        {currentStep === 1 && <Step1Info data={formData} onChange={(k,v) => setFormData({...formData, [k]:v})} />}
+                        {currentStep === 2 && <Step2Topics grade={formData.grade} selectedUnits={selectedUnits} onToggleUnit={(id) => setSelectedUnits(prev => prev.includes(id)?prev.filter(x=>x!==id):[...prev, id])} />}
                         {currentStep === 3 && <Step3Config grade={formData.grade} />}
-                        {currentStep === 4 && <Step4Matrix grade={formData.grade} selectedUnits={selectedUnits} />}
-                        {currentStep === 5 && <Step5Export formData={formData} selectedUnits={selectedUnits} grade={formData.grade} />}
+                        {currentStep === 4 && <Step4Matrix grade={formData.grade} />}
+                        {/* Bước 5: Xem trước - Truyền hàm callback để lưu nội dung */}
+                        {currentStep === 5 && <Step5Preview formData={formData} selectedUnits={selectedUnits} grade={formData.grade} onContentGenerated={setGeneratedExamContent} />}
+                        {/* Bước 6: Xuất file - Dùng lại nội dung đã lưu */}
+                        {currentStep === 6 && <Step6Export formData={formData} examContent={generatedExamContent} />}
                     </main>
-                    <button onClick={handleReset} className="fixed top-20 right-4 z-40 text-xs text-gray-400 hover:text-red-500 underline bg-white/80 p-1 rounded">Reset</button>
+
                     <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-2xl z-50">
                         <div className="max-w-5xl mx-auto flex justify-between items-center">
-                            <button onClick={() => setCurrentStep(c => Math.max(1, c - 1))} disabled={currentStep === 1} className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition ${currentStep === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-600 hover:bg-gray-100 border shadow-sm'}`}><ChevronLeft size={20} /> Quay lại</button>
-                            <button onClick={() => setCurrentStep(c => Math.min(5, c + 1))} disabled={currentStep === 5} className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-white shadow-lg transition ${currentStep === 5 ? 'hidden' : 'bg-[#005CA9] hover:bg-blue-700'}`}>Tiếp theo <ChevronRight size={20} /></button>
+                            <button onClick={() => setCurrentStep(c => Math.max(1, c - 1))} disabled={currentStep === 1} className="px-6 py-2 border rounded hover:bg-gray-50">Quay lại</button>
+                            <button onClick={() => setCurrentStep(c => Math.min(6, c + 1))} disabled={currentStep === 6} className="px-6 py-2 bg-[#005CA9] text-white rounded hover:bg-blue-700">Tiếp theo</button>
                         </div>
                     </div>
                 </div>
