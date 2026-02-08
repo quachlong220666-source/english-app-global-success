@@ -566,6 +566,25 @@
         const units = CURRICULUM_DATA[grade].filter(u => selectedUnits.includes(u.id));
 
         const handleDownload = () => {
+            // --- TẠO CÂU HỎI TRẮC NGHIỆM (MCQ) MẪU ---
+            let mcqContent = '';
+            for (let i = 1; i <= config.mcqCount; i++) {
+                mcqContent += `
+                    <p style="margin-bottom: 5px;"><strong>Question ${i}:</strong> Choose the best answer to complete the sentence.</p>
+                    <p style="margin-bottom: 15px;">A. Option A &nbsp;&nbsp;&nbsp;&nbsp; B. Option B &nbsp;&nbsp;&nbsp;&nbsp; C. Option C &nbsp;&nbsp;&nbsp;&nbsp; D. Option D</p>
+                `;
+            }
+
+            // --- TẠO CÂU HỎI TỰ LUẬN (WRITING) MẪU ---
+            let essayContent = '';
+            for (let i = 1; i <= config.essayCount; i++) {
+                essayContent += `
+                    <p style="margin-bottom: 5px;"><strong>Question ${i}:</strong> Rewrite the following sentence without changing its meaning.</p>
+                    <p style="margin-bottom: 15px;">_________________________________________________________________________</p>
+                    <br/>
+                `;
+            }
+
             const content = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
                 <head>
@@ -577,6 +596,8 @@
                         th, td { border: 1px solid black; padding: 5px; text-align: left; }
                         th { background-color: #f2f2f2; }
                         .header { text-align: center; font-weight: bold; margin-bottom: 20px; }
+                        h4 { margin-top: 20px; color: #005CA9; }
+                        h5 { margin-top: 15px; font-weight: bold; text-transform: uppercase; }
                     </style>
                 </head>
                 <body>
@@ -634,8 +655,21 @@
                             </tr>
                         </tbody>
                     </table>
+                    
+                    <br/><hr/><br/>
+
+                    <!-- PHẦN ĐỀ BÀI ĐƯỢC THÊM VÀO -->
+                    <h4 style="text-align: center; color: black;">V. NỘI DUNG ĐỀ KIỂM TRA (MINH HỌA)</h4>
+                    
+                    <h5>PART 1: MULTIPLE CHOICE (${config.mcqCount} questions)</h5>
+                    ${mcqContent}
+
+                    <h5>PART 2: WRITING (${config.essayCount} questions)</h5>
+                    ${essayContent}
+
                     <br/>
-                    <p><em>File được tạo tự động bởi hệ thống Tiếng Anh Global Success App.</em></p>
+                    <p style="text-align: center;"><em>--- HẾT ---</em></p>
+                    <p style="font-size: 10pt; color: gray;"><em>File được tạo tự động bởi hệ thống Tiếng Anh Global Success App.</em></p>
                 </body>
                 </html>
             `;
