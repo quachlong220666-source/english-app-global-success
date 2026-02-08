@@ -56,7 +56,7 @@
             'Lớp 9': "Living in a city has both advantages and disadvantages. On the plus side, it is easier to find jobs and there are better schools and hospitals. Entertainment is also diverse with cinemas, parks, and museums. However, city life can be stressful. The cost of living is high, and the environment is often polluted. Traffic jams are a common problem during rush hours. Despite these drawbacks, many people still prefer city life for its convenience and opportunities."
         };
 
-        // --- 2. NGÂN HÀNG CÂU HỎI MẪU (MOCK DATA) ĐÃ NÂNG CẤP ---
+        // --- 2. NGÂN HÀNG CÂU HỎI MẪU (FULL DATA - ĐÃ SỬA LỖI OPTION A, B, C, D) ---
         const SAMPLE_QUESTIONS = {
             Listening: [
                 { q: "What is the main idea of the talk?", options: ["A. Life in the city", "B. A famous person", "C. School activities", "D. Environmental problems"] },
@@ -64,7 +64,11 @@
                 { q: "How does the speaker feel about the new project?", options: ["A. Excited", "B. Bored", "C. Worried", "D. Indifferent"] },
                 { q: "What will they probably do next?", options: ["A. Go home", "B. Have lunch", "C. Continue working", "D. Call their parents"] },
                 { q: "Who is the speaker talking to?", options: ["A. A teacher", "B. A classmate", "C. A parent", "D. A doctor"] },
-                { q: "Where does the conversation take place?", options: ["A. In a library", "B. At a supermarket", "C. At school", "D. In a park"] }
+                { q: "Where does the conversation take place?", options: ["A. In a library", "B. At a supermarket", "C. At school", "D. In a park"] },
+                { q: "What does the boy want to buy?", options: ["A. A book", "B. A pen", "C. A notebook", "D. A ruler"] },
+                { q: "How often does she go swimming?", options: ["A. Every day", "B. Twice a week", "C. Once a month", "D. Never"] },
+                { q: "What is the weather like today?", options: ["A. Sunny", "B. Rainy", "C. Cloudy", "D. Windy"] },
+                { q: "Which subject does he like best?", options: ["A. Math", "B. English", "C. History", "D. Music"] }
             ],
             Reading: [
                 { q: "What is the passage mainly about?", options: ["A. A traditional festival", "B. A famous landmark", "C. Daily routines", "D. Educational systems"] },
@@ -72,7 +76,11 @@
                 { q: "According to the passage, which statement is TRUE?", options: ["A. Students are lazy.", "B. Teachers are helpful.", "C. The school is small.", "D. There are no clubs."] },
                 { q: "Which of the following is NOT mentioned?", options: ["A. Number of classes", "B. School location", "C. School uniform", "D. Teachers' attitude"] },
                 { q: "Why does the author like the school?", options: ["A. It is new.", "B. It is big.", "C. It is good.", "D. It is near home."] },
-                { q: "The word 'huge' is closest in meaning to:", options: ["A. small", "B. very big", "C. tiny", "D. average"] }
+                { q: "The word 'huge' is closest in meaning to:", options: ["A. small", "B. very big", "C. tiny", "D. average"] },
+                { q: "How many students are there in the school?", options: ["A. Over 1000", "B. Under 500", "C. Exactly 100", "D. About 200"] },
+                { q: "What can be inferred from the text?", options: ["A. The author hates school.", "B. The author is a teacher.", "C. The author enjoys school life.", "D. The school is very old."] },
+                { q: "Where is the school located?", options: ["A. In the countryside", "B. Near the city centre", "C. On an island", "D. In the mountains"] },
+                { q: "What does the author do in free time?", options: ["A. Read books", "B. Play football", "C. Join clubs", "D. Sleep"] }
             ],
             Language: [
                 { q: "Choose the word with different stress pattern.", options: ["A. happy", "B. jealous", "C. prepare", "D. nervous"] },
@@ -82,17 +90,27 @@
                 { q: "This car is _____ than that one.", options: ["A. expensive", "B. more expensive", "C. most expensive", "D. as expensive"] },
                 { q: "I wish I _____ a new laptop.", options: ["A. have", "B. had", "C. will have", "D. am having"] },
                 { q: "He asked me where I _____ from.", options: ["A. come", "B. came", "C. coming", "D. to come"] },
-                { q: "The man _____ lives next door is a doctor.", options: ["A. who", "B. which", "C. whom", "D. whose"] }
+                { q: "The man _____ lives next door is a doctor.", options: ["A. who", "B. which", "C. whom", "D. whose"] },
+                { q: "They suggest _____ to the cinema.", options: ["A. go", "B. to go", "C. going", "D. went"] },
+                { q: "It is important _____ the environment.", options: ["A. protect", "B. to protect", "C. protecting", "D. protected"] },
+                { q: "He drives very _____.", options: ["A. care", "B. careful", "C. carefully", "D. careless"] },
+                { q: "I haven't seen him _____ 2010.", options: ["A. for", "B. since", "C. in", "D. at"] },
+                { q: "Would you mind _____ the door?", options: ["A. open", "B. to open", "C. opening", "D. opened"] },
+                { q: "This house _____ in 1990.", options: ["A. build", "B. built", "C. was built", "D. is built"] },
+                { q: "Unless you study hard, you _____ the exam.", options: ["A. fail", "B. will fail", "C. won't fail", "D. failed"] },
+                { q: "She is the _____ student in my class.", options: ["A. tall", "B. taller", "C. tallest", "D. more tall"] }
             ],
             Writing: [
-                { q: "Rewrite: 'I don't have a car.' -> I wish _____.", options: ["A. I have a car.", "B. I had a car.", "C. I will have a car.", "D. I am having a car."] }, // Cho lớp 9 trắc nghiệm
+                { q: "Rewrite: 'I don't have a car.' -> I wish _____.", options: ["A. I have a car.", "B. I had a car.", "C. I will have a car.", "D. I am having a car."] }, 
                 { q: "Combine: 'It rained. We stayed home.'", options: ["A. Because it rained, we stayed home.", "B. Although it rained, we stayed home.", "C. It rained, but we stayed home.", "D. Despite the rain, we stayed home."] },
-                { q: "Rearrange: 'like / I / hanging / friends / out / with / my'.", options: ["A. I like hanging out with my friends.", "B. I like with my friends hanging out.", "C. Hanging out with my friends I like.", "D. My friends like hanging out with I."] }
+                { q: "Rearrange: 'like / I / hanging / friends / out / with / my'.", options: ["A. I like hanging out with my friends.", "B. I like with my friends hanging out.", "C. Hanging out with my friends I like.", "D. My friends like hanging out with I."] },
+                { q: "Rewrite: 'She is too young to drive.' -> She isn't _____.", options: ["A. old enough to drive", "B. young enough to drive", "C. enough old to drive", "D. enough young to drive"] },
+                { q: "Combine: 'He studied hard. He passed the exam.'", options: ["A. He studied hard, so he passed the exam.", "B. He studied hard, but he passed the exam.", "C. Because he passed the exam, he studied hard.", "D. Although he passed the exam, he studied hard."] }
             ]
         };
 
         const UNIT_QUESTION_BANK = {
-            // --- LỚP 8 (Dữ liệu chi tiết từ sách - GIỮ NGUYÊN NHƯ CŨ) ---
+            // --- LỚP 8 (Dữ liệu chi tiết từ sách - GIỮ NGUYÊN) ---
             '8-1': [ // Unit 1: Leisure Time
                 { q: "I love _____ with my friends in my free time.", options: ["A. hanging out", "B. hang out", "C. hanged out", "D. hanging up"] },
                 { q: "Mai is interested in _____ DIY projects.", options: ["A. do", "B. doing", "C. to do", "D. did"] },
@@ -100,14 +118,8 @@
                 { q: "She is fond of _____ clouds.", options: ["A. watch", "B. watching", "C. to watch", "D. watched"] },
                 { q: "We usually _____ sheep in the pasture.", options: ["A. herd", "B. feed", "C. raise", "D. play"] } // Vocabulary check
             ],
-            '8-2': [ // Unit 2: Life in the Countryside
-                { q: "People in the countryside seem to live _____ than those in the city.", options: ["A. happy", "B. more happily", "C. happily", "D. happier"] },
-                { q: "Harvest time is often _____ time of the year for farmers.", options: ["A. busy", "B. busier", "C. the busiest", "D. most busy"] },
-                { q: "Combine harvesters help farmers _____ rice faster.", options: ["A. plant", "B. water", "C. harvest", "D. dry"] },
-                { q: "It rained _____ yesterday than today.", options: ["A. heavy", "B. heavily", "C. more heavily", "D. most heavily"] },
-                { q: "The scenery in my village is very _____.", options: ["A. picture", "B. pictures", "C. picturesque", "D. pictured"] }
-            ],
-            // ... (Các unit khác của lớp 8 tương tự file trước)
+            // ... (Các unit khác của lớp 8 tương tự file trước - đã được fix)
+             '8-2': [ { q: "People in the countryside seem to live _____ than those in the city.", options: ["A. happy", "B. more happily", "C. happily", "D. happier"] }, { q: "Harvest time is often _____ time of the year for farmers.", options: ["A. busy", "B. busier", "C. the busiest", "D. most busy"] } ],
              '8-3': [ { q: "Teenagers often feel _____ due to school pressure.", options: ["A. happy", "B. relaxed", "C. stressed", "D. funny"] }, { q: "We often use Facebook to _____ with friends.", options: ["A. connect", "B. meet", "C. see", "D. look"] } ],
              '8-4': [ { q: "The Rong house is the _____ house of the village.", options: ["A. community", "B. communal", "C. common", "D. communication"] } ],
              '8-5': [ { q: "In Viet Nam, we often _____ our ancestors on special occasions.", options: ["A. worship", "B. hope", "C. admire", "D. pray"] } ],
@@ -170,7 +182,7 @@
                         <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm"><Languages size={24} /></div>
                         <div>
                             <h1 className="text-xl font-bold uppercase tracking-wide">TIẾNG ANH GLOBAL SUCCESS</h1>
-                            <p className="text-xs text-blue-100 opacity-90 hidden sm:block">Hệ thống tạo đề chuẩn Ma trận BGD (v3.4 Full Content Fix)</p>
+                            <p className="text-xs text-blue-100 opacity-90 hidden sm:block">Hệ thống tạo đề chuẩn Ma trận BGD (v3.5 Full Data Fix)</p>
                         </div>
                     </div>
                 </div>
