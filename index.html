@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiếng Anh Global Success App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        const Icon = ({ path, size = 24, className = "", ...props }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+                {path}
+            </svg>
+        );
+
+        const Icons = {
+            Info: <><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></>,
+            BookOpen: <><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>,
+            Settings: <><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></>,
+            Grid3X3: <><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></>,
+            Download: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></>,
+            ChevronRight: <path d="m9 18 6-6-6-6"/>,
+            ChevronLeft: <path d="m15 18-6-6 6-6"/>,
+            CheckCircle2: <><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></>,
+            Check: <path d="M20 6 9 17l-5-5"/>,
+            Clock: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
+            HelpCircle: <><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></>,
+            FileText: <><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></>,
+            PenTool: <><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></>,
+            Calculator: <><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></>,
+            Languages: <><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></>,
+            GraduationCap: <><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></>,
+            X: <path d="M18 6 6 18M6 6l12 12"/>
+        };
+
+        const Info = (props) => <Icon path={Icons.Info} {...props} />;
+        const BookOpen = (props) => <Icon path={Icons.BookOpen} {...props} />;
+        const Settings = (props) => <Icon path={Icons.Settings} {...props} />;
+        const Grid3X3 = (props) => <Icon path={Icons.Grid3X3} {...props} />;
+        const Download = (props) => <Icon path={Icons.Download} {...props} />;
+        const ChevronRight = (props) => <Icon path={Icons.ChevronRight} {...props} />;
+        const ChevronLeft = (props) => <Icon path={Icons.ChevronLeft} {...props} />;
+        const CheckCircle2 = (props) => <Icon path={Icons.CheckCircle2} {...props} />;
+        const Check = (props) => <Icon path={Icons.Check} {...props} />;
+        const Clock = (props) => <Icon path={Icons.Clock} {...props} />;
+        const HelpCircle = (props) => <Icon path={Icons.HelpCircle} {...props} />;
+        const FileText = (props) => <Icon path={Icons.FileText} {...props} />;
+        const PenTool = (props) => <Icon path={Icons.PenTool} {...props} />;
+        const Calculator = (props) => <Icon path={Icons.Calculator} {...props} />;
+        const Languages = (props) => <Icon path={Icons.Languages} {...props} />;
+        const GraduationCap = (props) => <Icon path={Icons.GraduationCap} {...props} />;
+        const X = (props) => <Icon path={Icons.X} {...props} />;
+
+        const CURRICULUM_DATA = {
+            'Lớp 6': [
+                { id: '6-1', title: 'Unit 1: My New School' },
+                { id: '6-2', title: 'Unit 2: My Home' },
+                { id: '6-3', title: 'Unit 3: My Friends' },
+                { id: '6-R1', title: 'Review 1' },
+                { id: '6-4', title: 'Unit 4: My Neighbourhood' },
+                { id: '6-5', title: 'Unit 5: Natural Wonders of Viet Nam' },
+                { id: '6-6', title: 'Unit 6: Our Tet Holiday' },
+                { id: '6-R2', title: 'Review 2' },
+            ],
+            'Lớp 7': [
+                { id: '7-1', title: 'Unit 1: Hobbies' },
+                { id: '7-2', title: 'Unit 2: Healthy Living' },
+                { id: '7-3', title: 'Unit 3: Community Service' },
+                { id: '7-R1', title: 'Review 1' },
+                { id: '7-4', title: 'Unit 4: Music and Arts' },
+                { id: '7-5', title: 'Unit 5: Food and Drink' },
+                { id: '7-6', title: 'Unit 6: A Visit to a School' },
+                { id: '7-R2', title: 'Review 2' },
+            ],
+            'Lớp 8': [
+                { id: '8-1', title: 'Unit 1: Leisure Time' },
+                { id: '8-2', title: 'Unit 2: Life in the Countryside' },
+                { id: '8-3', title: 'Unit 3: Teenagers' },
+                { id: '8-R1', title: 'Review 1' },
+                { id: '8-4', title: 'Unit 4: Ethnic Groups of Viet Nam' },
+                { id: '8-5', title: 'Unit 5: Our Customs and Traditions' },
+                { id: '8-6', title: 'Unit 6: Lifestyles' },
+                { id: '8-R2', title: 'Review 2' },
+            ],
+            'Lớp 9': [
+                { id: '9-1', title: 'Unit 1: Local Community' },
+                { id: '9-2', title: 'Unit 2: City Life' },
+                { id: '9-3', title: 'Unit 3: Healthy Living for Teens' },
+                { id: '9-R1', title: 'Review 1' },
+                { id: '9-4', title: 'Unit 4: Remembering the Past' },
+                { id: '9-5', title: 'Unit 5: Our Experiences' },
+                { id: '9-6', title: 'Unit 6: Viet Nam: Then and Now' },
+                { id: '9-R2', title: 'Review 2' },
+            ]
+        };
+
+        const Header = () => (
+        <header className="bg-[#005CA9] text-white py-4 px-6 shadow-md sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto flex justify-between items-center">
+            <div className="flex items-center gap-3">
+                <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
+                <Languages size={24} />
+                </div>
+                <div>
+                <h1 className="text-xl font-bold uppercase tracking-wide">TIẾNG ANH GLOBAL SUCCESS</h1>
+                <p className="text-xs text-blue-100 opacity-90 hidden sm:block">Hệ thống tạo đề kiểm tra & Ma trận tự động</p>
+                </div>
+            </div>
+            <div className="bg-white/10 px-3 py-1 rounded text-xs font-mono text-blue-100 hidden sm:block">
+                v2.5.0 Premium
+            </div>
+            </div>
+        </header>
+        );
+
+        const Stepper = ({ currentStep, steps }) => (
+        <div className="py-6 px-4 bg-white border-b shadow-sm sticky top-[72px] z-40">
+            <div className="max-w-5xl mx-auto relative">
+            <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-100 -z-10 transform -translate-y-1/2 rounded-full hidden md:block" />
+            <div className="absolute top-1/2 left-0 h-1 bg-green-500 -z-10 transform -translate-y-1/2 rounded-full transition-all duration-500 hidden md:block" 
+                style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }} />
+            
+            <div className="flex justify-between items-center w-full">
+                {steps.map((step) => {
+                const isActive = currentStep === step.id;
+                const isCompleted = currentStep > step.id;
+                const Icon = step.icon;
+
+                return (
+                    <div key={step.id} className="flex flex-col items-center bg-white px-2">
+                    <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 shadow-sm ${isCompleted ? 'border-green-500 bg-green-500 text-white scale-105' : isActive ? 'border-[#005CA9] bg-[#005CA9] text-white scale-110 ring-4 ring-blue-50' : 'border-gray-200 bg-gray-50 text-gray-400'}`}>
+                        {isCompleted ? <Check size={20} /> : <Icon size={20} />}
+                    </div>
+                    <div className="mt-2 text-center hidden md:block">
+                        <p className={`text-xs font-bold uppercase tracking-wider ${isActive ? 'text-[#005CA9]' : isCompleted ? 'text-green-600' : 'text-gray-400'}`}>
+                        {step.title}
+                        </p>
+                    </div>
+                    </div>
+                );
+                })}
+            </div>
+            </div>
+        </div>
+        );
+
+        const Step1Info = ({ data, onChange }) => (
+        <div className="max-w-3xl mx-auto mt-8 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden animate-fade-in">
+            <div className="bg-gradient-to-r from-blue-50 to-white p-6 border-b border-gray-100">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <Info className="text-[#005CA9]" size={24}/> Thông tin chung
+            </h2>
+            <p className="text-sm text-gray-500 mt-1 pl-8">Thiết lập các thông tin cơ bản cho bộ hồ sơ đề thi.</p>
+            </div>
+
+            <div className="p-8 space-y-6">
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Tên Trường / Đơn vị</label>
+                <div className="relative">
+                <GraduationCap className="absolute left-3 top-3 text-gray-400" size={18} />
+                <input 
+                    type="text" 
+                    value={data.schoolName}
+                    onChange={(e) => onChange('schoolName', e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#005CA9] focus:border-transparent outline-none transition"
+                    placeholder="Ví dụ: THCS Lý Tự Trọng"
+                />
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Khối lớp</label>
+                <select 
+                    value={data.grade}
+                    onChange={(e) => onChange('grade', e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#005CA9] outline-none bg-white cursor-pointer"
+                >
+                    {Object.keys(CURRICULUM_DATA).map(g => (
+                    <option key={g} value={g}>{g}</option>
+                    ))}
+                </select>
+                </div>
+                <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Năm học</label>
+                <input 
+                    type="text" 
+                    value={data.year}
+                    onChange={(e) => onChange('year', e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#005CA9] outline-none"
+                />
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Loại bài kiểm tra</label>
+                <select 
+                    value={data.examName}
+                    onChange={(e) => onChange('examName', e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#005CA9] outline-none bg-white cursor-pointer"
+                >
+                    <option>Kiểm tra Giữa kì I</option>
+                    <option>Kiểm tra Cuối kì I</option>
+                    <option>Kiểm tra Giữa kì II</option>
+                    <option>Kiểm tra Cuối kì II</option>
+                    <option>Kiểm tra Thường xuyên (15 phút)</option>
+                </select>
+                </div>
+                <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Mã đề</label>
+                <input 
+                    type="number" 
+                    value={data.examNumber}
+                    onChange={(e) => onChange('examNumber', e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#005CA9] outline-none text-center font-semibold"
+                />
+                </div>
+            </div>
+            </div>
+        </div>
+        );
+
+        const Step2Topics = ({ grade, selectedUnits, onToggleUnit }) => {
+        const units = CURRICULUM_DATA[grade] || [];
+        const selectedCount = selectedUnits.length;
+
+        return (
+            <div className="max-w-4xl mx-auto mt-8 p-4 animate-fade-in">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <div>
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    <BookOpen className="text-[#005CA9]" /> Chọn nội dung kiểm tra
+                </h2>
+                <p className="text-gray-500 text-sm mt-1">Chương trình {grade} - Global Success</p>
+                </div>
+                <div className="bg-blue-50 text-[#005CA9] px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 border border-blue-100 shadow-sm">
+                <CheckCircle2 size={16} /> Đã chọn: {selectedCount}/{units.length}
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {units.map((unit) => {
+                const isSelected = selectedUnits.includes(unit.id);
+                return (
+                    <div 
+                    key={unit.id} 
+                    onClick={() => onToggleUnit(unit.id)}
+                    className={`
+                        relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 group
+                        ${isSelected 
+                        ? 'border-[#005CA9] bg-blue-50/50 shadow-md' 
+                        : 'border-transparent bg-white shadow-sm hover:border-blue-200 hover:shadow-md'}
+                    `}
+                    >
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                        <div className={`
+                            w-10 h-10 rounded-lg flex items-center justify-center transition-colors
+                            ${isSelected ? 'bg-[#005CA9] text-white' : 'bg-gray-100 text-gray-400'}
+                        `}>
+                            <span className="font-bold text-sm">{unit.id.split('-')[1]}</span>
+                        </div>
+                        <div>
+                            <h3 className={`font-semibold ${isSelected ? 'text-[#005CA9]' : 'text-gray-700'}`}>
+                            {unit.title}
+                            </h3>
+                            <p className="text-xs text-gray-500">Global Success</p>
+                        </div>
+                        </div>
+                        {isSelected && <CheckCircle2 className="text-[#005CA9] animate-bounce-short" size={24} />}
+                    </div>
+                    </div>
+                );
+                })}
+            </div>
+            </div>
+        );
+        };
+
+        const Step3Config = ({ config, setConfig }) => {
+        const mcqScore = config.mcqCount * config.mcqPoint;
+        const essayScore = config.essayCount * config.essayPoint;
+        const totalScore = mcqScore + essayScore;
+        const totalQuestions = parseInt(config.mcqCount) + parseInt(config.essayCount);
+
+        const handleConfigChange = (field, value) => {
+            setConfig(prev => ({ ...prev, [field]: parseFloat(value) || 0 }));
+        };
+
+        return (
+            <div className="max-w-4xl mx-auto mt-8 p-4 animate-fade-in">
+            <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold text-gray-800">Cấu trúc đề thi</h2>
+                <p className="text-gray-500">Thiết lập số lượng câu hỏi và trọng số điểm</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-5">
+                    <HelpCircle size={100} />
+                </div>
+                <div className="flex items-center gap-2 mb-6 text-[#005CA9]">
+                    <Grid3X3 />
+                    <h3 className="font-bold text-lg">Trắc nghiệm (MCQ)</h3>
+                </div>
+                
+                <div className="space-y-4">
+                    <div>
+                    <label className="text-sm font-medium text-gray-600 block mb-1">Số câu hỏi</label>
+                    <div className="flex items-center gap-2">
+                        <input 
+                        type="number" 
+                        value={config.mcqCount}
+                        onChange={(e) => handleConfigChange('mcqCount', e.target.value)}
+                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#005CA9] outline-none font-bold text-lg"
+                        />
+                        <span className="text-sm text-gray-500">câu</span>
+                    </div>
+                    </div>
+                    <div>
+                    <label className="text-sm font-medium text-gray-600 block mb-1">Điểm mỗi câu</label>
+                    <div className="flex items-center gap-2">
+                        <input 
+                        type="number" 
+                        step="0.05"
+                        value={config.mcqPoint}
+                        onChange={(e) => handleConfigChange('mcqPoint', e.target.value)}
+                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#005CA9] outline-none font-bold text-lg"
+                        />
+                        <span className="text-sm text-gray-500">điểm</span>
+                    </div>
+                    </div>
+                    <div className="pt-4 border-t mt-2">
+                    <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Tổng điểm TN:</span>
+                        <span className="text-2xl font-bold text-[#005CA9]">{mcqScore.toFixed(2)}</span>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-5">
+                    <PenTool size={100} />
+                </div>
+                <div className="flex items-center gap-2 mb-6 text-teal-600">
+                    <PenTool />
+                    <h3 className="font-bold text-lg">Tự luận (Writing)</h3>
+                </div>
+                
+                <div className="space-y-4">
+                    <div>
+                    <label className="text-sm font-medium text-gray-600 block mb-1">Số câu hỏi</label>
+                    <div className="flex items-center gap-2">
+                        <input 
+                        type="number" 
+                        value={config.essayCount}
+                        onChange={(e) => handleConfigChange('essayCount', e.target.value)}
+                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none font-bold text-lg"
+                        />
+                        <span className="text-sm text-gray-500">câu</span>
+                    </div>
+                    </div>
+                    <div>
+                    <label className="text-sm font-medium text-gray-600 block mb-1">Điểm trung bình</label>
+                    <div className="flex items-center gap-2">
+                        <input 
+                        type="number" 
+                        step="0.1"
+                        value={config.essayPoint}
+                        onChange={(e) => handleConfigChange('essayPoint', e.target.value)}
+                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none font-bold text-lg"
+                        />
+                        <span className="text-sm text-gray-500">điểm</span>
+                    </div>
+                    </div>
+                    <div className="pt-4 border-t mt-2">
+                    <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Tổng điểm TL:</span>
+                        <span className="text-2xl font-bold text-teal-600">{essayScore.toFixed(2)}</span>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div className={`rounded-xl p-4 flex justify-between items-center shadow-md transition-colors duration-300 ${totalScore === 10 ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+                <div className="flex items-center gap-3">
+                <Calculator className={totalScore === 10 ? 'text-green-600' : 'text-red-500'} />
+                <div>
+                    <div className="font-bold text-gray-800">TỔNG HỢP</div>
+                    {totalScore !== 10 && <div className="text-xs text-red-500">Tổng điểm phải bằng 10!</div>}
+                </div>
+                </div>
+                <div className="flex gap-8 text-center">
+                    <div>
+                    <div className="text-xs text-gray-500 uppercase">Số câu</div>
+                    <div className="font-bold text-xl">{totalQuestions}</div>
+                    </div>
+                    <div>
+                    <div className="text-xs text-gray-500 uppercase">Điểm toàn bài</div>
+                    <div className={`font-bold text-2xl ${totalScore === 10 ? 'text-green-600' : 'text-red-500'}`}>
+                        {totalScore.toFixed(2)}
+                    </div>
+                    </div>
+                    <div className="border-l pl-8">
+                    <div className="text-xs text-gray-500 uppercase">Thời gian</div>
+                    <div className="font-bold text-xl flex items-center gap-1 justify-center">
+                        <input 
+                        type="number" 
+                        value={config.time} 
+                        onChange={(e) => handleConfigChange('time', e.target.value)}
+                        className="w-12 bg-transparent text-center outline-none border-b border-gray-300 focus:border-blue-500"
+                        />'
+                    </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        );
+        };
+
+        const Step4Matrix = ({ grade, selectedUnits, config }) => {
+        const units = CURRICULUM_DATA[grade].filter(u => selectedUnits.includes(u.id));
+        
+        const generateMatrix = () => {
+            if (units.length === 0) return [];
+            const rows = [];
+            const mcqPerUnit = Math.floor(config.mcqCount / units.length);
+            let remainingMcq = config.mcqCount - (mcqPerUnit * units.length);
+
+            units.forEach((unit, index) => {
+                rows.push({
+                    id: unit.id + 'P',
+                    topic: unit.title,
+                    content: 'Phonetics & Vocabulary',
+                    type: 'MCQ',
+                    count: index === 0 ? mcqPerUnit + remainingMcq : mcqPerUnit,
+                    score: (index === 0 ? mcqPerUnit + remainingMcq : mcqPerUnit) * config.mcqPoint
+                });
+            });
+
+            rows.push({
+                id: 'WR',
+                topic: 'Writing Skill',
+                content: 'Sentence building / Paragraph',
+                type: 'TL',
+                count: config.essayCount,
+                score: config.essayCount * config.essayPoint
+            });
+
+            return rows;
+        };
+
+        const matrixData = useMemo(() => generateMatrix(), [units, config]);
+
+        if (selectedUnits.length === 0) {
+            return (
+            <div className="text-center p-12 animate-fade-in">
+                <div className="inline-block p-4 bg-yellow-100 rounded-full text-yellow-600 mb-4">
+                <BookOpen size={32} />
+                </div>
+                <h3 className="text-lg font-bold text-gray-700">Chưa chọn nội dung nào</h3>
+                <p className="text-gray-500">Vui lòng quay lại Bước 2 để chọn Unit kiểm tra.</p>
+            </div>
+            );
+        }
+
+        return (
+            <div className="max-w-6xl mx-auto mt-8 p-4 animate-fade-in">
+            <div className="flex justify-between items-end mb-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-800">Ma trận đề thi tự động</h2>
+                    <p className="text-gray-500 text-sm">Được sinh tự động từ {units.length} unit đã chọn</p>
+                </div>
+                <button className="text-[#005CA9] text-sm font-medium hover:underline flex items-center gap-1">
+                    <Settings size={14} /> Chỉnh sửa thủ công
+                </button>
+            </div>
+
+            <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm border-collapse">
+                        <thead className="bg-[#005CA9] text-white">
+                        <tr>
+                            <th className="p-3 border border-white/20 w-12">STT</th>
+                            <th className="p-3 border border-white/20 text-left">Chủ đề (Unit)</th>
+                            <th className="p-3 border border-white/20 text-left">Nội dung / Kỹ năng</th>
+                            <th className="p-3 border border-white/20 w-24">Loại câu</th>
+                            <th className="p-3 border border-white/20 w-24">Số câu</th>
+                            <th className="p-3 border border-white/20 w-24">Điểm số</th>
+                            <th className="p-3 border border-white/20 w-24">Tỉ lệ</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {matrixData.map((row, idx) => (
+                            <tr key={idx} className="border-b hover:bg-blue-50 transition-colors">
+                                <td className="p-3 border text-center text-gray-500">{idx + 1}</td>
+                                <td className="p-3 border font-medium text-gray-800">{row.topic}</td>
+                                <td className="p-3 border text-gray-600">{row.content}</td>
+                                <td className="p-3 border text-center">
+                                    <span className={`px-2 py-1 rounded text-xs font-bold ${row.type === 'MCQ' ? 'bg-blue-100 text-blue-700' : 'bg-teal-100 text-teal-700'}`}>
+                                    {row.type}
+                                    </span>
+                                </td>
+                                <td className="p-3 border text-center font-bold">{row.count}</td>
+                                <td className="p-3 border text-center">{row.score.toFixed(2)}</td>
+                                <td className="p-3 border text-center text-gray-500 text-xs">{(row.score * 10).toFixed(1)}%</td>
+                            </tr>
+                        ))}
+                        <tr className="bg-gray-50 font-bold">
+                            <td colSpan="4" className="p-3 border text-right uppercase text-gray-600">Tổng cộng</td>
+                            <td className="p-3 border text-center text-blue-600 text-lg">
+                                {matrixData.reduce((acc, r) => acc + r.count, 0)}
+                            </td>
+                            <td className="p-3 border text-center text-green-600 text-lg">
+                                {matrixData.reduce((acc, r) => acc + r.score, 0).toFixed(2)}
+                            </td>
+                            <td className="p-3 border text-center">100%</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white p-4 rounded-xl border shadow-sm">
+                    <h4 className="font-bold text-gray-700 mb-2 text-sm uppercase">Nhận biết (40%)</h4>
+                    <div className="w-full bg-gray-100 rounded-full h-2">
+                        <div className="bg-blue-500 h-2 rounded-full" style={{width: '40%'}}></div>
+                    </div>
+                </div>
+                <div className="bg-white p-4 rounded-xl border shadow-sm">
+                    <h4 className="font-bold text-gray-700 mb-2 text-sm uppercase">Thông hiểu (30%)</h4>
+                    <div className="w-full bg-gray-100 rounded-full h-2">
+                        <div className="bg-blue-500 h-2 rounded-full" style={{width: '30%'}}></div>
+                    </div>
+                </div>
+                <div className="bg-white p-4 rounded-xl border shadow-sm">
+                    <h4 className="font-bold text-gray-700 mb-2 text-sm uppercase">Vận dụng (30%)</h4>
+                    <div className="w-full bg-gray-100 rounded-full h-2">
+                        <div className="bg-blue-500 h-2 rounded-full" style={{width: '30%'}}></div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        );
+        };
+
+        const Step5Export = ({ formData, config, selectedUnits, grade }) => {
+        const units = CURRICULUM_DATA[grade].filter(u => selectedUnits.includes(u.id));
+        
+        return (
+            <div className="max-w-4xl mx-auto mt-8 p-4 animate-fade-in">
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                <div className="bg-[#005CA9] text-white p-6 text-center">
+                <div className="inline-block p-3 bg-white/20 rounded-full mb-3">
+                    <CheckCircle2 size={40} />
+                </div>
+                <h2 className="text-2xl font-bold">Sẵn sàng xuất hồ sơ!</h2>
+                <p className="text-blue-100">Vui lòng kiểm tra kỹ thông tin dưới đây trước khi tải về.</p>
+                </div>
+                
+                <div className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 border-b pb-8">
+                    <div>
+                        <h3 className="text-sm font-bold text-gray-400 uppercase mb-4">Thông tin chung</h3>
+                        <ul className="space-y-3">
+                            <li className="flex justify-between"><span className="text-gray-600">Trường:</span> <span className="font-semibold">{formData.schoolName}</span></li>
+                            <li className="flex justify-between"><span className="text-gray-600">Khối lớp:</span> <span className="font-semibold">{formData.grade}</span></li>
+                            <li className="flex justify-between"><span className="text-gray-600">Năm học:</span> <span className="font-semibold">{formData.year}</span></li>
+                            <li className="flex justify-between"><span className="text-gray-600">Kỳ thi:</span> <span className="font-semibold">{formData.examName}</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-bold text-gray-400 uppercase mb-4">Cấu trúc đề</h3>
+                        <ul className="space-y-3">
+                            <li className="flex justify-between"><span className="text-gray-600">Thời gian:</span> <span className="font-semibold">{config.time} phút</span></li>
+                            <li className="flex justify-between"><span className="text-gray-600">Trắc nghiệm:</span> <span className="font-semibold text-blue-600">{config.mcqCount} câu</span></li>
+                            <li className="flex justify-between"><span className="text-gray-600">Tự luận:</span> <span className="font-semibold text-teal-600">{config.essayCount} câu</span></li>
+                            <li className="flex justify-between pt-2 border-t"><span className="text-gray-800 font-bold">Tổng điểm:</span> <span className="font-bold text-green-600">{(config.mcqCount * config.mcqPoint + config.essayCount * config.essayPoint).toFixed(2)}</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div className="mb-8">
+                    <h3 className="text-sm font-bold text-gray-400 uppercase mb-4">Phạm vi kiến thức (Units)</h3>
+                    <div className="flex flex-wrap gap-2">
+                        {units.map(u => (
+                            <span key={u.id} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm border border-gray-200">
+                            {u.title}
+                            </span>
+                        ))}
+                        {units.length === 0 && <span className="text-red-500 italic">Chưa chọn nội dung nào!</span>}
+                    </div>
+                </div>
+
+                <button className="w-full py-4 bg-[#005CA9] hover:bg-blue-800 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-3 transition transform active:scale-95"
+                    onClick={() => alert("Đã tải xuống file hồ sơ: " + formData.examName + ".docx")}
+                >
+                    <Download size={24} /> TẢI VỀ TRỌN BỘ HỒ SƠ (.DOCX)
+                </button>
+                <p className="text-center text-xs text-gray-400 mt-4">
+                    Bao gồm: Ma trận, Bản đặc tả, Đề thi (Đề chẵn/lẻ), Đáp án & File nghe (nếu có).
+                </p>
+                </div>
+            </div>
+            </div>
+        );
+        };
+
+        const App = () => {
+            const [currentStep, setCurrentStep] = useState(1);
+            
+            const [formData, setFormData] = useState(() => {
+                const saved = localStorage.getItem('gs_formData');
+                return saved ? JSON.parse(saved) : {
+                    schoolName: 'THCS Nguyễn Du',
+                    grade: 'Lớp 8',
+                    year: '2025 - 2026',
+                    examName: 'Kiểm tra Cuối kì I',
+                    examNumber: '1'
+                };
+            });
+
+            const [selectedUnits, setSelectedUnits] = useState(() => {
+                const saved = localStorage.getItem('gs_selectedUnits');
+                return saved ? JSON.parse(saved) : ['8-1', '8-2', '8-3'];
+            });
+
+            const [config, setConfig] = useState(() => {
+                const saved = localStorage.getItem('gs_config');
+                return saved ? JSON.parse(saved) : {
+                    time: 60,
+                    mcqCount: 32,
+                    mcqPoint: 0.25,
+                    essayCount: 4,
+                    essayPoint: 0.5
+                };
+            });
+
+            useEffect(() => localStorage.setItem('gs_formData', JSON.stringify(formData)), [formData]);
+            useEffect(() => localStorage.setItem('gs_selectedUnits', JSON.stringify(selectedUnits)), [selectedUnits]);
+            useEffect(() => localStorage.setItem('gs_config', JSON.stringify(config)), [config]);
+
+            const handleFormDataChange = (key, value) => {
+                setFormData(prev => ({ ...prev, [key]: value }));
+                if (key === 'grade') setSelectedUnits([]);
+            };
+
+            const toggleUnit = (unitId) => {
+                setSelectedUnits(prev => prev.includes(unitId) ? prev.filter(id => id !== unitId) : [...prev, unitId]);
+            };
+
+            const handleReset = () => {
+                if (window.confirm('Bạn có chắc muốn xóa toàn bộ dữ liệu đã lưu và quay về mặc định?')) {
+                    localStorage.clear();
+                    window.location.reload();
+                }
+            };
+
+            const steps = [
+                { id: 1, title: 'Thông tin', icon: Info },
+                { id: 2, title: 'Nội dung', icon: BookOpen },
+                { id: 3, title: 'Cấu trúc', icon: Settings },
+                { id: 4, title: 'Ma trận', icon: Grid3X3 },
+                { id: 5, title: 'Xuất file', icon: Download },
+            ];
+
+            return (
+                <div className="min-h-screen pb-24 relative">
+                    <Header />
+                    <Stepper currentStep={currentStep} steps={steps} />
+                    
+                    <main>
+                        {currentStep === 1 && <Step1Info data={formData} onChange={handleFormDataChange} />}
+                        {currentStep === 2 && <Step2Topics grade={formData.grade} selectedUnits={selectedUnits} onToggleUnit={toggleUnit} />}
+                        {currentStep === 3 && <Step3Config config={config} setConfig={setConfig} />}
+                        {currentStep === 4 && <Step4Matrix grade={formData.grade} selectedUnits={selectedUnits} config={config} />}
+                        {currentStep === 5 && <Step5Export formData={formData} config={config} selectedUnits={selectedUnits} grade={formData.grade} />}
+                    </main>
+
+                     <button 
+                        onClick={handleReset}
+                        className="fixed top-20 right-4 z-40 text-xs text-gray-400 hover:text-red-500 underline bg-white/80 p-1 rounded"
+                    >
+                        Reset dữ liệu
+                    </button>
+
+                    <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-2xl z-50">
+                        <div className="max-w-5xl mx-auto flex justify-between items-center">
+                            <button 
+                                onClick={() => setCurrentStep(c => Math.max(1, c - 1))}
+                                disabled={currentStep === 1}
+                                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition ${currentStep === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300 shadow-sm'}`}
+                            >
+                                <ChevronLeft size={20} /> Quay lại
+                            </button>
+
+                            <div className="hidden md:flex gap-2">
+                                {steps.map(s => <div key={s.id} className={`w-2 h-2 rounded-full ${s.id === currentStep ? 'bg-[#005CA9]' : 'bg-gray-300'}`} />)}
+                            </div>
+
+                            <button 
+                                onClick={() => setCurrentStep(c => Math.min(5, c + 1))}
+                                disabled={currentStep === 5}
+                                className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-white shadow-lg transition transform active:scale-95 ${currentStep === 5 ? 'hidden' : 'flex bg-[#005CA9] hover:bg-blue-700'}`}
+                            >
+                                Tiếp theo <ChevronRight size={20} />
+                            </button>
+
+                            {currentStep === 5 && (
+                                <button className="flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-white shadow-lg bg-green-600 hover:bg-green-700 transition transform active:scale-95" onClick={() => alert("Đang xử lý xuất file...")}>
+                                    <Check size={20} /> Hoàn tất
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
