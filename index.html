@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiếng Anh Global Success App - No Bold Questions</title>
+    <title>Tiếng Anh Global Success App - Content Enhanced</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -75,7 +75,6 @@
 
         // --- 1. DỮ LIỆU CỐ ĐỊNH (CONSTANTS) ---
         
-        // Ma trận đề thi chuẩn
         const MATRIX_RULES = {
             '6-7-8': { 
                 structure: [
@@ -98,25 +97,34 @@
             }
         };
 
+        // BÀI ĐỌC DÀI VÀ CHI TIẾT HƠN (UPDATED)
         const SAMPLE_READING_PASSAGE = {
-            'Lớp 6': "My new school is in a quiet place not far from the city centre. It has three buildings and a large yard. This year there are 26 classes with more than 1,000 students. Most students are hard-working and serious. The school has about 40 teachers. They are all helpful and friendly.",
-            'Lớp 7': "Healthy living is about making healthy choices every day. It’s about eating a balanced diet, getting regular exercise, and avoiding harmful habits. Eating plenty of fruits and vegetables is important. You should also drink enough water.",
-            'Lớp 8': "If you go to the American state of Alaska, you might find the traditional lifestyle there interesting. Although Alaska is quite large, it has a small population. The native peoples in Alaska still maintain many of their traditions.",
-            'Lớp 9': "Living in a city has both advantages and disadvantages. On the plus side, it is easier to find jobs and there are better schools. However, city life can be stressful. The cost of living is high, and the environment is often polluted."
+            'Lớp 6': "My new school is in a quiet place not far from the city centre. It has three buildings and a large yard. This year there are 26 classes with more than 1,000 students. Most students are hard-working and serious. The school has about 40 teachers. They are all helpful and friendly. My school has different clubs: Dance, English, Arts, Football and Basketball. I like English, so I joined the English club. I love my school because it is a good school. At break time, we often play badminton or chat in the school yard. The library is also a favorite place for many students to read books.",
+            'Lớp 7': "Healthy living is about making healthy choices every day. It’s about eating a balanced diet, getting regular exercise, and avoiding harmful habits. Eating plenty of fruits and vegetables is important. You should also drink enough water. Exercise helps keep your body strong and your mind sharp. Try to get at least 30 minutes of moderate activity most days. Getting enough sleep is also crucial for your health. Lack of sleep can make you feel tired and affect your study. Remember, small changes can make a big difference to your health.",
+            'Lớp 8': "If you go to the American state of Alaska, you might find the traditional lifestyle there interesting. Although Alaska is quite large, with nearly 1.7 million square kilometres, it has a small population of about 730,000. The native peoples in Alaska still maintain many of their traditions. They keep their old ways of making arts and crafts alive. Various native groups have their own special styles of carving or weaving as well as their unique tribal dances and drumming. Therefore, visitors to Alaska may experience some of their culture in their villages. They may see performances of traditional music and native art in galleries and museums. Alaska is also known for its unusual method of transport - the dogsled. Today, dog sledding is more of a sport than a true means of transport.",
+            'Lớp 9': "Living in a city has both advantages and disadvantages. On the plus side, it is easier to find jobs and there are better schools and hospitals. Entertainment is also diverse with cinemas, parks, and museums. However, city life can be stressful. The cost of living is high, and the environment is often polluted. Traffic jams are a common problem during rush hours. Noise pollution is another issue that affects people's health. Despite these drawbacks, many people still prefer city life for its convenience and opportunities for personal development."
+        };
+
+        // AUDIO SCRIPTS (NEW)
+        const SAMPLE_AUDIO_SCRIPTS = {
+            'Lớp 6': "<strong>MC:</strong> Hello. Welcome to our school radio. Today we are interviewing Mai.<br/><strong>Interviewer:</strong> Hi Mai. Can you tell us about your school?<br/><strong>Mai:</strong> Sure. My school is Thang Long Lower Secondary School. It is big and nice.<br/><strong>Interviewer:</strong> What do you do at break time?<br/><strong>Mai:</strong> I usually play badminton with my friends. Sometimes we go to the library to read books.<br/><strong>Interviewer:</strong> What is your favorite subject?<br/><strong>Mai:</strong> I like English and Music.",
+            'Lớp 7': "<strong>Speaker:</strong> Good morning everyone. Today I want to talk about how to stay healthy. First, you should eat more vegetables and fruit. They have a lot of vitamins. Second, you should exercise daily. You can cycle, swim or play football. Third, remember to wash your hands before meals to avoid viruses. Finally, don't stay up too late. You should go to bed before 10 p.m.",
+            'Lớp 8': "<strong>Tom:</strong> Hi, Trang. Surprised to see you. What brings you here?<br/><strong>Trang:</strong> Oh, hello Tom. I'm looking for a knitting kit.<br/><strong>Tom:</strong> A knitting kit? I didn't know you like knitting.<br/><strong>Trang:</strong> Actually, I'm keen on many DIY activities. In my leisure time, I love knitting, building dollhouses, and making paper flowers.<br/><strong>Tom:</strong> I see. So, you like spending time on your own.<br/><strong>Trang:</strong> Yeah. What do you do in your free time?",
+            'Lớp 9': "<strong>Reporter:</strong> We are asking some students about their community service. Here is Lan.<br/><strong>Lan:</strong> I think community service is very important. Last summer, I volunteered at the local soup kitchen. We cooked and served meals for the poor and homeless people in our town. It was hard work but I felt very happy because I could help others. Next month, my class will organise a clean-up day to collect rubbish in the park."
         };
 
         // Dữ liệu dự phòng (Backup)
         const SAMPLE_QUESTIONS = {
             Listening: [
-                { q: "What is the main idea of the talk?", options: ["A. City life", "B. School life", "C. Holidays", "D. Environment"] },
-                { q: "When does the event start?", options: ["A. 7:00 a.m.", "B. 8:30 a.m.", "C. 9:00 a.m.", "D. 2:00 p.m."] },
-                { q: "How does the speaker feel?", options: ["A. Happy", "B. Sad", "C. Worried", "D. Angry"] },
-                { q: "Who is the speaker talking to?", options: ["A. Teacher", "B. Friend", "C. Parent", "D. Doctor"] }
+                { q: "What is the main topic of the conversation?", options: ["A. School life", "B. Hobbies", "C. Health", "D. Travel"] },
+                { q: "When does the activity usually take place?", options: ["A. In the morning", "B. At break time", "C. After school", "D. On weekends"] },
+                { q: "How does the speaker feel?", options: ["A. Happy", "B. Tired", "C. Bored", "D. Excited"] },
+                { q: "Who is the speaker talking to?", options: ["A. A teacher", "B. A friend", "C. A reporter", "D. A parent"] }
             ],
             Reading: [
-                { q: "What is the passage about?", options: ["A. Festival", "B. Landmark", "C. Routine", "D. Education"] },
+                { q: "What is the passage mainly about?", options: ["A. A festival", "B. A place", "C. Daily routine", "D. Education"] },
                 { q: "The word 'it' refers to:", options: ["A. School", "B. City", "C. Yard", "D. Student"] },
-                { q: "Which statement is TRUE?", options: ["A. Statement A", "B. Statement B", "C. Statement C", "D. Statement D"] },
+                { q: "Which statement is TRUE according to the text?", options: ["A. Statement A", "B. Statement B", "C. Statement C", "D. Statement D"] },
                 { q: "Why does the author like it?", options: ["A. Reason A", "B. Reason B", "C. Reason C", "D. Reason D"] }
             ],
             Language: [
@@ -215,7 +223,7 @@
             Eye: <g><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></g>
         };
 
-        // --- CORE GENERATOR FUNCTION (Dùng chung cho Preview và Export) ---
+        // --- CORE GENERATOR FUNCTION ---
         const generateExamContent = (formData, selectedUnits, grade) => {
             const matrixKey = (grade === 'Lớp 9') ? '9' : '6-7-8';
             const matrix = MATRIX_RULES[matrixKey];
@@ -238,7 +246,6 @@
                 <div style="font-weight:bold; text-align:center; margin-top:18pt; margin-bottom:12pt;">II. NỘI DUNG ĐỀ KIỂM TRA</div>
             `;
 
-            // Helper get questions
             const getQuestionData = (skill) => {
                 let questions = [];
                 if (grade === 'Lớp 8') {
@@ -305,13 +312,19 @@
             htmlBody += `<div style="text-align:center; margin-top:18pt; font-style:italic;">--- THE END ---</div>`;
             
             // Answer Key HTML
+            const audioScript = SAMPLE_AUDIO_SCRIPTS[formData.grade] || "No audio script available for this level.";
             const answerKeyHtml = `
                 <br clear=all style='mso-special-character:line-break;page-break-before:always'>
-                <div style="text-align:center; font-weight:bold; font-size:14pt; margin-top:20pt; margin-bottom:12pt; border-top: 1px dashed #ccc; padding-top: 20px;">ĐÁP ÁN (ANSWER KEY) - MÃ ĐỀ ${formData.examNumber}</div>
-                <table border="1" style="width:50%; margin:0 auto; border-collapse:collapse;">
+                <div style="text-align:center; font-weight:bold; font-size:14pt; margin-top:20pt; margin-bottom:12pt; border-top: 1px dashed #ccc; padding-top: 20px;">ĐÁP ÁN VÀ HƯỚNG DẪN CHẤM (ANSWER KEY) - MÃ ĐỀ ${formData.examNumber}</div>
+                <table border="1" style="width:50%; margin:0 auto; border-collapse:collapse; margin-bottom: 20pt;">
                     <tr style="background:#e0e0e0; font-weight:bold; text-align:center;"><td>Câu</td><td>Đáp án</td></tr>
                     ${answerKeys.map(k => `<tr><td style="text-align:center;">${k.q}</td><td style="text-align:center; font-weight:bold;">${k.ans}</td></tr>`).join('')}
                 </table>
+                
+                <div style="margin-top: 20pt;">
+                    <div style="font-weight:bold; text-decoration:underline; margin-bottom: 10pt;">TRANSCRIPT (NỘI DUNG BÀI NGHE):</div>
+                    <div style="font-style:italic; background:#f9f9f9; padding:10pt; border:1px solid #ddd;">${audioScript}</div>
+                </div>
             `;
 
             return { body: htmlBody, keys: answerKeyHtml };
@@ -326,14 +339,14 @@
                         <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm"><Icon path={Icons.Languages} /></div>
                         <div>
                             <h1 className="text-xl font-bold uppercase tracking-wide">TIẾNG ANH GLOBAL SUCCESS</h1>
-                            <p className="text-xs text-blue-100 opacity-90 hidden sm:block">Hệ thống tạo đề chuẩn Ma trận BGD (v4.1 No Bold Q)</p>
+                            <p className="text-xs text-blue-100 opacity-90 hidden sm:block">Hệ thống tạo đề chuẩn Ma trận BGD (v4.2 Enhanced Content)</p>
                         </div>
                     </div>
                 </div>
             </header>
         );
 
-        // Các bước 1-4 giữ nguyên như cũ (tôi rút gọn để tập trung vào Preview)
+        // ... Steps 1-4 remain similar (shortened for brevity) ...
         const Step1Info = ({ data, onChange }) => (
              <div className="max-w-3xl mx-auto mt-8 bg-white rounded-xl shadow-lg border p-8">
                 <h2 className="text-xl font-bold mb-4 flex gap-2"><Icon path={Icons.Info}/> Thông tin chung</h2>
@@ -384,43 +397,26 @@
             </div>
         );
 
-        // --- NEW STEP 5: PREVIEW ---
         const Step5Preview = ({ formData, selectedUnits, grade, onContentGenerated }) => {
             const [content, setContent] = useState({ body: '', keys: '' });
-
             useEffect(() => {
-                // Tạo nội dung ngay khi component được mount
                 const generated = generateExamContent(formData, selectedUnits, grade);
                 setContent(generated);
-                onContentGenerated(generated); // Gửi dữ liệu lên App để dùng cho bước Export
+                onContentGenerated(generated);
             }, []);
-
             return (
                 <div className="max-w-5xl mx-auto mt-8 p-4 animate-fade-in">
-                    <div className="text-center mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800 flex items-center justify-center gap-2">
-                            <Icon path={Icons.Eye}/> Xem trước Đề thi
-                        </h2>
-                        <p className="text-gray-500 text-sm">Đây là nội dung chính xác sẽ xuất hiện trong file Word.</p>
-                    </div>
-                    
-                    <div className="preview-container">
-                        <div className="preview-page">
-                            <div dangerouslySetInnerHTML={{__html: content.body + '<hr style="margin: 20px 0; border-top: 1px dashed #999;">' + content.keys}} />
-                        </div>
-                    </div>
+                    <div className="text-center mb-6"><h2 className="text-2xl font-bold flex justify-center gap-2"><Icon path={Icons.Eye}/> Xem trước Đề thi</h2></div>
+                    <div className="preview-container"><div className="preview-page"><div dangerouslySetInnerHTML={{__html: content.body + '<hr style="margin: 20px 0; border-top: 1px dashed #999;">' + content.keys}} /></div></div>
                 </div>
             );
         };
 
-        // --- STEP 6: EXPORT (Modified) ---
         const Step6Export = ({ formData, examContent }) => {
             const handleDownload = () => {
                 if (!examContent || !examContent.body) return alert("Vui lòng quay lại bước Xem trước để tạo dữ liệu!");
-                
                 const cssReset = `<style>@page{size:A4;margin:1in;}body{font-family:'Times New Roman',serif;font-size:12pt;line-height:1.2;}p,div{margin:0;padding:0;}table{width:100%;border-collapse:collapse;}</style>`;
                 const finalHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'>${cssReset}</head><body>${examContent.body}${examContent.keys}</body></html>`;
-                
                 const blob = new Blob(['\ufeff', finalHtml], { type: 'application/msword' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
@@ -429,13 +425,11 @@
                 link.click();
                 document.body.removeChild(link);
             };
-
             return (
                 <div className="max-w-4xl mx-auto mt-8 p-4 animate-fade-in text-center">
                     <div className="bg-white p-8 rounded-xl shadow-lg border">
                         <Icon path={Icons.CheckCircle2} />
                         <h2 className="text-2xl font-bold mb-2 mt-4">Hồ sơ đã sẵn sàng!</h2>
-                        <p className="text-gray-500 mb-6">Bạn đã kiểm tra kỹ nội dung ở bước trước.</p>
                         <button onClick={handleDownload} className="bg-[#005CA9] text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-blue-700 transition flex items-center gap-2 mx-auto mt-6">
                             <Icon path={Icons.Download} /> TẢI VỀ FILE WORD (.DOC)
                         </button>
@@ -446,9 +440,7 @@
 
         const App = () => {
             const [currentStep, setCurrentStep] = useState(1);
-            // State để lưu nội dung đề thi đã sinh ra ở bước Preview (để đồng bộ với Export)
             const [generatedExamContent, setGeneratedExamContent] = useState(null);
-
             const [formData, setFormData] = useState(() => {
                 try { return JSON.parse(localStorage.getItem('gs_formData')) || { schoolName: 'THCS Nguyễn Du', grade: 'Lớp 8', year: '2025 - 2026', examName: 'Kiểm tra Cuối kì I', examNumber: '1' }; } catch(e){ return { schoolName: 'THCS Nguyễn Du', grade: 'Lớp 8', year: '2025 - 2026', examName: 'Kiểm tra Cuối kì I', examNumber: '1' }; }
             });
@@ -464,7 +456,7 @@
                 { id: 2, title: 'Nội dung', icon: Icons.BookOpen },
                 { id: 3, title: 'Cấu trúc', icon: Icons.Settings },
                 { id: 4, title: 'Ma trận', icon: Icons.Grid3X3 },
-                { id: 5, title: 'Xem trước', icon: Icons.Eye }, // Bước mới
+                { id: 5, title: 'Xem trước', icon: Icons.Eye },
                 { id: 6, title: 'Xuất file', icon: Icons.Download },
             ];
 
@@ -487,9 +479,7 @@
                         {currentStep === 2 && <Step2Topics grade={formData.grade} selectedUnits={selectedUnits} onToggleUnit={(id) => setSelectedUnits(prev => prev.includes(id)?prev.filter(x=>x!==id):[...prev, id])} />}
                         {currentStep === 3 && <Step3Config grade={formData.grade} />}
                         {currentStep === 4 && <Step4Matrix grade={formData.grade} />}
-                        {/* Bước 5: Xem trước - Truyền hàm callback để lưu nội dung */}
                         {currentStep === 5 && <Step5Preview formData={formData} selectedUnits={selectedUnits} grade={formData.grade} onContentGenerated={setGeneratedExamContent} />}
-                        {/* Bước 6: Xuất file - Dùng lại nội dung đã lưu */}
                         {currentStep === 6 && <Step6Export formData={formData} examContent={generatedExamContent} />}
                     </main>
 
