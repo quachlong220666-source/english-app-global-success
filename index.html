@@ -56,39 +56,70 @@
             'Lớp 9': "Living in a city has both advantages and disadvantages. On the plus side, it is easier to find jobs and there are better schools and hospitals. Entertainment is also diverse with cinemas, parks, and museums. However, city life can be stressful. The cost of living is high, and the environment is often polluted. Traffic jams are a common problem during rush hours. Despite these drawbacks, many people still prefer city life for its convenience and opportunities."
         };
 
-        // --- 2. NGÂN HÀNG CÂU HỎI MẪU (MOCK DATA) ---
+        // --- 2. NGÂN HÀNG CÂU HỎI MẪU (MOCK DATA) ĐÃ NÂNG CẤP ---
         const SAMPLE_QUESTIONS = {
             Listening: [
-                "Listen to the passage and choose the correct answer: What is the main idea?",
-                "Listen and fill in the blank: The event starts at _____.",
-                "True or False: The speaker likes living in the city.",
-                "Listen and choose the best title for the conversation."
+                { q: "What is the main idea of the talk?", options: ["A. Life in the city", "B. A famous person", "C. School activities", "D. Environmental problems"] },
+                { q: "According to the speaker, what time does the event start?", options: ["A. At 7:00 a.m.", "B. At 8:30 a.m.", "C. At 9:00 a.m.", "D. At 2:00 p.m."] },
+                { q: "How does the speaker feel about the new project?", options: ["A. Excited", "B. Bored", "C. Worried", "D. Indifferent"] },
+                { q: "What will they probably do next?", options: ["A. Go home", "B. Have lunch", "C. Continue working", "D. Call their parents"] },
+                { q: "Who is the speaker talking to?", options: ["A. A teacher", "B. A classmate", "C. A parent", "D. A doctor"] },
+                { q: "Where does the conversation take place?", options: ["A. In a library", "B. At a supermarket", "C. At school", "D. In a park"] }
             ],
             Reading: [
-                "Read the passage and answer: What is the text mainly about?",
-                "Find a word in the text that means 'very big' or 'important'.",
-                "According to the text, which statement is TRUE?",
-                "Which statement is NOT true according to the text?",
-                "What does the word 'it' in the text refer to?",
-                "Why does the author mention the specific location?",
-                "What can be inferred from the passage?",
-                "What is the author's opinion about the topic?"
+                { q: "What is the passage mainly about?", options: ["A. A traditional festival", "B. A famous landmark", "C. Daily routines", "D. Educational systems"] },
+                { q: "The word 'it' in the passage refers to:", options: ["A. The school", "B. The city", "C. The yard", "D. The student"] },
+                { q: "According to the passage, which statement is TRUE?", options: ["A. Students are lazy.", "B. Teachers are helpful.", "C. The school is small.", "D. There are no clubs."] },
+                { q: "Which of the following is NOT mentioned?", options: ["A. Number of classes", "B. School location", "C. School uniform", "D. Teachers' attitude"] },
+                { q: "Why does the author like the school?", options: ["A. It is new.", "B. It is big.", "C. It is good.", "D. It is near home."] },
+                { q: "The word 'huge' is closest in meaning to:", options: ["A. small", "B. very big", "C. tiny", "D. average"] }
             ],
             Language: [
                 { q: "Choose the word with different stress pattern.", options: ["A. happy", "B. jealous", "C. prepare", "D. nervous"] },
                 { q: "My brother _____ tennis every Sunday.", options: ["A. play", "B. plays", "C. playing", "D. is playing"] },
                 { q: "If it rains, we _____ at home.", options: ["A. stay", "B. stayed", "C. will stay", "D. staying"] },
                 { q: "She is interested _____ drawing.", options: ["A. on", "B. at", "C. in", "D. with"] },
-                { q: "This car is _____ than that one.", options: ["A. expensive", "B. more expensive", "C. most expensive", "D. as expensive"] }
+                { q: "This car is _____ than that one.", options: ["A. expensive", "B. more expensive", "C. most expensive", "D. as expensive"] },
+                { q: "I wish I _____ a new laptop.", options: ["A. have", "B. had", "C. will have", "D. am having"] },
+                { q: "He asked me where I _____ from.", options: ["A. come", "B. came", "C. coming", "D. to come"] },
+                { q: "The man _____ lives next door is a doctor.", options: ["A. who", "B. which", "C. whom", "D. whose"] }
             ],
             Writing: [
-                "Rewrite the sentence: 'I don't have a car.' -> I wish _____.",
-                "Make a sentence using: 'although / raining / go / school'.",
-                "Complete the sentence: 'It takes me 30 minutes _____.'",
-                "Reorder the words: 'like / I / hanging / friends / out / with / my'."
+                { q: "Rewrite: 'I don't have a car.' -> I wish _____.", options: ["A. I have a car.", "B. I had a car.", "C. I will have a car.", "D. I am having a car."] }, // Cho lớp 9 trắc nghiệm
+                { q: "Combine: 'It rained. We stayed home.'", options: ["A. Because it rained, we stayed home.", "B. Although it rained, we stayed home.", "C. It rained, but we stayed home.", "D. Despite the rain, we stayed home."] },
+                { q: "Rearrange: 'like / I / hanging / friends / out / with / my'.", options: ["A. I like hanging out with my friends.", "B. I like with my friends hanging out.", "C. Hanging out with my friends I like.", "D. My friends like hanging out with I."] }
             ]
         };
 
+        const UNIT_QUESTION_BANK = {
+            // --- LỚP 8 (Dữ liệu chi tiết từ sách - GIỮ NGUYÊN NHƯ CŨ) ---
+            '8-1': [ // Unit 1: Leisure Time
+                { q: "I love _____ with my friends in my free time.", options: ["A. hanging out", "B. hang out", "C. hanged out", "D. hanging up"] },
+                { q: "Mai is interested in _____ DIY projects.", options: ["A. do", "B. doing", "C. to do", "D. did"] },
+                { q: "Choose the word with different sound in the underlined part: school, moon, food, foot.", options: ["A. school", "B. moon", "C. food", "D. foot"] },
+                { q: "She is fond of _____ clouds.", options: ["A. watch", "B. watching", "C. to watch", "D. watched"] },
+                { q: "We usually _____ sheep in the pasture.", options: ["A. herd", "B. feed", "C. raise", "D. play"] } // Vocabulary check
+            ],
+            '8-2': [ // Unit 2: Life in the Countryside
+                { q: "People in the countryside seem to live _____ than those in the city.", options: ["A. happy", "B. more happily", "C. happily", "D. happier"] },
+                { q: "Harvest time is often _____ time of the year for farmers.", options: ["A. busy", "B. busier", "C. the busiest", "D. most busy"] },
+                { q: "Combine harvesters help farmers _____ rice faster.", options: ["A. plant", "B. water", "C. harvest", "D. dry"] },
+                { q: "It rained _____ yesterday than today.", options: ["A. heavy", "B. heavily", "C. more heavily", "D. most heavily"] },
+                { q: "The scenery in my village is very _____.", options: ["A. picture", "B. pictures", "C. picturesque", "D. pictured"] }
+            ],
+            // ... (Các unit khác của lớp 8 tương tự file trước)
+             '8-3': [ { q: "Teenagers often feel _____ due to school pressure.", options: ["A. happy", "B. relaxed", "C. stressed", "D. funny"] }, { q: "We often use Facebook to _____ with friends.", options: ["A. connect", "B. meet", "C. see", "D. look"] } ],
+             '8-4': [ { q: "The Rong house is the _____ house of the village.", options: ["A. community", "B. communal", "C. common", "D. communication"] } ],
+             '8-5': [ { q: "In Viet Nam, we often _____ our ancestors on special occasions.", options: ["A. worship", "B. hope", "C. admire", "D. pray"] } ],
+             '8-6': [ { q: "Using _____ products helps protect the environment.", options: ["A. green", "B. red", "C. blue", "D. yellow"] } ],
+             '8-7': [ { q: "We should protect _____ species from extinction.", options: ["A. dangerous", "B. endangered", "C. danger", "D. endanger"] } ],
+             '8-8': [ { q: "I often buy things at the _____ market near my house.", options: ["A. open-air", "B. open-space", "C. open-minded", "D. open-door"] } ],
+             '8-9': [ { q: "A _____ destroyed many houses in the village last night.", options: ["A. flood", "B. rain", "C. water", "D. wind"] } ],
+             '8-10': [ { q: "In the future, we might communicate by _____.", options: ["A. email", "B. telepathy", "C. video call", "D. letter"] } ],
+             '8-11': [ { q: "Science and technology change our lives _____.", options: ["A. enormous", "B. enormously", "C. big", "D. huge"] } ],
+             '8-12': [ { q: "There might be _____ on other planets.", options: ["A. life", "B. live", "C. living", "D. lives"] } ]
+        };
+        
         const CURRICULUM_DATA = {
             'Lớp 6': [ { id: '6-1', title: 'Unit 1: My New School' }, { id: '6-2', title: 'Unit 2: My Home' }, { id: '6-3', title: 'Unit 3: My Friends' }, { id: '6-4', title: 'Unit 4: My Neighbourhood' } ],
             'Lớp 7': [ { id: '7-1', title: 'Unit 1: Hobbies' }, { id: '7-2', title: 'Unit 2: Healthy Living' }, { id: '7-3', title: 'Unit 3: Community Service' } ],
@@ -139,7 +170,7 @@
                         <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm"><Languages size={24} /></div>
                         <div>
                             <h1 className="text-xl font-bold uppercase tracking-wide">TIẾNG ANH GLOBAL SUCCESS</h1>
-                            <p className="text-xs text-blue-100 opacity-90 hidden sm:block">Hệ thống tạo đề chuẩn Ma trận BGD (v3.2 Professional Format)</p>
+                            <p className="text-xs text-blue-100 opacity-90 hidden sm:block">Hệ thống tạo đề chuẩn Ma trận BGD (v3.4 Full Content Fix)</p>
                         </div>
                     </div>
                 </div>
@@ -351,11 +382,39 @@
                 
                 let globalQuestionIndex = 1;
                 const answerKeys = []; // Array để lưu đáp án
+                
+                // Helper để lấy câu hỏi từ ngân hàng
+                // Nếu có UNIT_QUESTION_BANK từ PDF thì dùng, nếu không thì dùng SAMPLE_QUESTIONS hoặc FALLBACK
+                const getQuestionData = (skill) => {
+                    let questions = [];
+                    // Ưu tiên lấy từ UNIT_QUESTION_BANK nếu có dữ liệu lớp 8
+                    if (typeof UNIT_QUESTION_BANK !== 'undefined' && grade === 'Lớp 8') {
+                        // Collect questions from selected units
+                         selectedUnits.forEach(uid => {
+                             if(UNIT_QUESTION_BANK[uid]) questions = [...questions, ...UNIT_QUESTION_BANK[uid]];
+                         });
+                         // If not enough, get from all units of grade 8
+                         if (questions.length < 5) {
+                             Object.keys(UNIT_QUESTION_BANK).forEach(k => {
+                                 if(k.startsWith('8-')) questions = [...questions, ...UNIT_QUESTION_BANK[k]];
+                             });
+                         }
+                    } 
+                    
+                    // Fallback to SAMPLE_QUESTIONS (which now has full structure) if needed (or for other grades)
+                    // Quan trọng: Phải kiểm tra nếu questions từ UNIT_QUESTION_BANK là mảng object có options đầy đủ
+                    // Nhưng ở bước này SAMPLE_QUESTIONS đã được nâng cấp đủ 4 options
+                    if (questions.length === 0 || skill !== 'Language') {
+                         questions = SAMPLE_QUESTIONS[skill] || SAMPLE_QUESTIONS['Language'];
+                    }
+                    
+                    return questions;
+                };
 
                 // Hàm sinh câu hỏi và lưu đáp án
                 const generateSectionContent = (skill, count) => {
                     let html = '';
-                    const questions = SAMPLE_QUESTIONS[skill] || SAMPLE_QUESTIONS['Language'];
+                    const questions = getQuestionData(skill);
                     
                     for(let i=0; i<count; i++) {
                         const currentQNum = globalQuestionIndex++;
@@ -364,7 +423,7 @@
                         let answer = '';
                         
                         // Logic xác định đáp án (Giả lập)
-                        if (skill === 'Writing' && grade !== 'Lớp 9') {
+                        if (skill === 'Writing' && grade !== 'Lớp 9' && !qData.options) {
                             answer = "Học sinh trả lời theo ý hiểu";
                             html += `<div class="question-block">
                                         <p class="question"><strong>${currentQNum}.</strong> ${typeof qData === 'string' ? qData : qData.q}</p>
@@ -374,18 +433,29 @@
                             // Trắc nghiệm: Random đáp án đúng A, B, C hoặc D
                             const correctChar = ['A', 'B', 'C', 'D'][Math.floor(Math.random() * 4)];
                             answer = correctChar;
-
+                            
+                            // Xử lý hiển thị options
+                            let ops = [];
                             if (typeof qData === 'string') {
-                                html += `<div class="question-block">
-                                            <p class="question"><strong>${currentQNum}.</strong> ${qData}</p>
-                                            <p class="options">A. Option A &nbsp;&nbsp;&nbsp;&nbsp; B. Option B &nbsp;&nbsp;&nbsp;&nbsp; C. Option C &nbsp;&nbsp;&nbsp;&nbsp; D. Option D</p>
-                                         </div>`;
+                                ops = ["A. Option A", "B. Option B", "C. Option C", "D. Option D"];
+                            } else if (qData.options) {
+                                ops = qData.options;
                             } else {
-                                html += `<div class="question-block">
-                                            <p class="question"><strong>${currentQNum}.</strong> ${qData.q}</p>
-                                            <p class="options">${qData.options.join('&nbsp;&nbsp;&nbsp;&nbsp;')}</p>
-                                         </div>`;
+                                // Fallback nếu dữ liệu lỗi
+                                ops = ["A. ...", "B. ...", "C. ...", "D. ..."];
                             }
+
+                            html += `<div class="question-block">
+                                        <p class="question"><strong>${currentQNum}.</strong> ${typeof qData === 'string' ? qData : qData.q}</p>
+                                        <table style="width:100%; border:none; margin-left: 15px;">
+                                            <tr>
+                                                <td style="border:none; text-align:left; width:25%;">${ops[0] || 'A.'}</td>
+                                                <td style="border:none; text-align:left; width:25%;">${ops[1] || 'B.'}</td>
+                                                <td style="border:none; text-align:left; width:25%;">${ops[2] || 'C.'}</td>
+                                                <td style="border:none; text-align:left; width:25%;">${ops[3] || 'D.'}</td>
+                                            </tr>
+                                        </table>
+                                     </div>`;
                         }
                         
                         answerKeys.push({ q: currentQNum, ans: answer });
@@ -469,9 +539,8 @@
                         th { background-color: #f0f0f0; }
                         .text-left { text-align: left; }
                         .section-title { font-weight: bold; margin-top: 20px; text-transform: uppercase; margin-bottom: 10px; }
-                        .question-block { margin-bottom: 10px; }
+                        .question-block { margin-bottom: 15px; } /* Tăng khoảng cách giữa các câu hỏi */
                         .question { margin-bottom: 5px; }
-                        .options { margin-left: 20px; }
                         .answer-space { margin-left: 20px; font-style: italic; color: #555; }
                         .reading-passage { border: 1px solid #ccc; padding: 15px; background-color: #fcfcfc; font-style: italic; margin-bottom: 15px; text-align: justify; }
                     </style></head>
