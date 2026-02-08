@@ -48,6 +48,14 @@
             }
         };
 
+        // --- BỔ SUNG: BÀI ĐỌC MẪU (READING PASSAGES) ---
+        const SAMPLE_READING_PASSAGE = {
+            'Lớp 6': "My new school is in a quiet place not far from the city centre. It has three buildings and a large yard. This year there are 26 classes with more than 1,000 students. Most students are hard-working and serious. The school has about 40 teachers. They are all helpful and friendly. My school has different clubs: Dance, English, Arts, Football and Basketball. I like English, so I joined the English club. I love my school because it is a good school.",
+            'Lớp 7': "Healthy living is about making healthy choices every day. It’s about eating a balanced diet, getting regular exercise, and avoiding harmful habits. Eating plenty of fruits and vegetables is important. You should also drink enough water. Exercise helps keep your body strong and your mind sharp. Try to get at least 30 minutes of moderate activity most days. Getting enough sleep is also crucial for your health.",
+            'Lớp 8': "If you go to the American state of Alaska, you might find the traditional lifestyle there interesting. Although Alaska is quite large, with nearly 1.7 million square kilometres, it has a small population of about 730,000. The native peoples in Alaska still maintain many of their traditions. They keep their old ways of making arts and crafts alive. Various native groups have their own special styles of carving or weaving as well as their unique tribal dances and drumming. Therefore, visitors to Alaska may experience some of their culture in their villages.",
+            'Lớp 9': "Living in a city has both advantages and disadvantages. On the plus side, it is easier to find jobs and there are better schools and hospitals. Entertainment is also diverse with cinemas, parks, and museums. However, city life can be stressful. The cost of living is high, and the environment is often polluted. Traffic jams are a common problem during rush hours. Despite these drawbacks, many people still prefer city life for its convenience and opportunities."
+        };
+
         // --- 2. NGÂN HÀNG CÂU HỎI MẪU (MOCK DATA) ---
         // Được gắn thẻ kỹ năng để phù hợp với ma trận
         const SAMPLE_QUESTIONS = {
@@ -58,10 +66,14 @@
                 "Listen and choose the best title for the conversation."
             ],
             Reading: [
-                "Read the passage and answer: Why did the author go to the village?",
-                "Find a word in the text that means 'very big'.",
-                "According to paragraph 2, what is the most popular activity?",
-                "Which statement is NOT true according to the text?"
+                "Read the passage and answer: What is the text mainly about?",
+                "Find a word in the text that means 'very big' or 'important'.",
+                "According to the text, which statement is TRUE?",
+                "Which statement is NOT true according to the text?",
+                "What does the word 'it' in the text refer to?",
+                "Why does the author mention the specific location?",
+                "What can be inferred from the passage?",
+                "What is the author's opinion about the topic?"
             ],
             Language: [
                 { q: "Choose the word with different stress pattern.", options: ["A. happy", "B. jealous", "C. prepare", "D. nervous"] },
@@ -368,6 +380,7 @@
                         .section-title { font-weight: bold; margin-top: 20px; text-transform: uppercase; }
                         .question { margin-bottom: 5px; margin-top: 10px; }
                         .options { margin-left: 20px; }
+                        .reading-passage { border: 1px solid #ccc; padding: 15px; background-color: #fcfcfc; font-style: italic; margin-bottom: 15px; }
                     </style></head>
                     <body>
                         <h2>${formData.schoolName.toUpperCase()}</h2>
@@ -405,10 +418,26 @@
 
                         <h4>II. NỘI DUNG ĐỀ KIỂM TRA (ĐỀ XUẤT)</h4>
                         
-                        ${matrix.structure.map((row, idx) => `
-                            <div class="section-title">PART ${idx + 1}: ${row.skill.toUpperCase()} (${row.total} questions)</div>
-                            ${generateSectionContent(row.skill, row.total)}
-                        `).join('')}
+                        ${matrix.structure.map((row, idx) => {
+                            let sectionHtml = `<div class="section-title">PART ${idx + 1}: ${row.skill.toUpperCase()} (${row.total} questions)</div>`;
+                            
+                            // Thêm bài đọc nếu là phần Reading
+                            if (row.skill === 'Reading') {
+                                const passage = SAMPLE_READING_PASSAGE[formData.grade] || SAMPLE_READING_PASSAGE['Lớp 8'];
+                                sectionHtml += `<div class="reading-passage">
+                                    <strong>Read the following passage and answer the questions below:</strong><br/><br/>
+                                    ${passage}
+                                </div>`;
+                            }
+
+                            // Thêm ghi chú nếu là phần Listening
+                            if (row.skill === 'Listening') {
+                                 sectionHtml += `<p style="font-style:italic; margin-bottom:10px;">(Teacher plays the recording twice)</p>`;
+                            }
+
+                            sectionHtml += generateSectionContent(row.skill, row.total);
+                            return sectionHtml;
+                        }).join('')}
 
                         <br/>
                         <p style="text-align: center;"><em>--- THE END ---</em></p>
