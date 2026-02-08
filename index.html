@@ -182,7 +182,7 @@
                         <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm"><Languages size={24} /></div>
                         <div>
                             <h1 className="text-xl font-bold uppercase tracking-wide">TIẾNG ANH GLOBAL SUCCESS</h1>
-                            <p className="text-xs text-blue-100 opacity-90 hidden sm:block">Hệ thống tạo đề chuẩn Ma trận BGD (v3.5 Full Data Fix)</p>
+                            <p className="text-xs text-blue-100 opacity-90 hidden sm:block">Hệ thống tạo đề chuẩn Ma trận BGD (v3.6 Compact Format)</p>
                         </div>
                     </div>
                 </div>
@@ -459,12 +459,12 @@
 
                             html += `<div class="question-block">
                                         <p class="question"><strong>${currentQNum}.</strong> ${typeof qData === 'string' ? qData : qData.q}</p>
-                                        <table style="width:100%; border:none; margin-left: 15px;">
+                                        <table style="width:100%; border:none; margin-left: 15px; margin-top: 2pt;">
                                             <tr>
-                                                <td style="border:none; text-align:left; width:25%;">${ops[0] || 'A.'}</td>
-                                                <td style="border:none; text-align:left; width:25%;">${ops[1] || 'B.'}</td>
-                                                <td style="border:none; text-align:left; width:25%;">${ops[2] || 'C.'}</td>
-                                                <td style="border:none; text-align:left; width:25%;">${ops[3] || 'D.'}</td>
+                                                <td style="border:none; text-align:left; width:25%; padding:0;">${ops[0] || 'A.'}</td>
+                                                <td style="border:none; text-align:left; width:25%; padding:0;">${ops[1] || 'B.'}</td>
+                                                <td style="border:none; text-align:left; width:25%; padding:0;">${ops[2] || 'C.'}</td>
+                                                <td style="border:none; text-align:left; width:25%; padding:0;">${ops[3] || 'D.'}</td>
                                             </tr>
                                         </table>
                                      </div>`;
@@ -480,9 +480,9 @@
                 
                 // Tiêu đề và Thông tin
                 bodyContent += `
-                    <h2>${formData.schoolName.toUpperCase()}</h2>
-                    <h3>HỒ SƠ ĐỀ KIỂM TRA MÔN TIẾNG ANH - ${formData.grade.toUpperCase()}</h3>
-                    <p style="text-align:center"><em>Kỳ thi: ${formData.examName} | Mã đề: ${formData.examNumber} | Thời gian: 60 phút</em></p>
+                    <h2 style="margin-bottom:0;">${formData.schoolName.toUpperCase()}</h2>
+                    <h3 style="margin-top:0;">HỒ SƠ ĐỀ KIỂM TRA MÔN TIẾNG ANH - ${formData.grade.toUpperCase()}</h3>
+                    <p style="text-align:center; margin-top:0;"><em>Kỳ thi: ${formData.examName} | Mã đề: ${formData.examNumber} | Thời gian: 60 phút</em></p>
                     <br/>
                 `;
                 
@@ -511,10 +511,10 @@
                     
                     if (row.skill === 'Reading') {
                         const passage = SAMPLE_READING_PASSAGE[formData.grade] || SAMPLE_READING_PASSAGE['Lớp 8'];
-                        bodyContent += `<div class="reading-passage"><strong>Read the following passage and answer the questions below:</strong><br/><br/>${passage}</div>`;
+                        bodyContent += `<div class="reading-passage"><strong>Read the following passage and answer the questions below:</strong><br/>${passage}</div>`;
                     }
                     if (row.skill === 'Listening') {
-                         bodyContent += `<p style="font-style:italic; margin-bottom:10px;">(Teacher plays the recording twice)</p>`;
+                         bodyContent += `<p style="font-style:italic; margin-bottom:6pt;">(Teacher plays the recording twice)</p>`;
                     }
 
                     bodyContent += generateSectionContent(row.skill, row.total);
@@ -545,16 +545,18 @@
                     <head><meta charset="utf-8"><title>${formData.examName}</title>
                     <style>
                         body { font-family: 'Times New Roman'; font-size: 12pt; }
-                        h2, h3, h4 { text-align: center; margin: 5px 0; }
-                        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-                        th, td { border: 1px solid black; padding: 5px; text-align: center; }
+                        h2, h3, h4 { text-align: center; margin: 6pt 0; }
+                        p { margin: 0; padding: 0; } /* Reset margin paragraph */
+                        table { width: 100%; border-collapse: collapse; margin: 10pt 0; }
+                        th, td { border: 1px solid black; padding: 4pt; text-align: center; }
                         th { background-color: #f0f0f0; }
                         .text-left { text-align: left; }
-                        .section-title { font-weight: bold; margin-top: 20px; text-transform: uppercase; margin-bottom: 10px; }
-                        .question-block { margin-bottom: 15px; } /* Tăng khoảng cách giữa các câu hỏi */
-                        .question { margin-bottom: 5px; }
+                        .section-title { font-weight: bold; margin-top: 12pt; text-transform: uppercase; margin-bottom: 6pt; }
+                        .question-block { margin-bottom: 6pt; } /* Giảm khoảng cách giữa các câu hỏi */
+                        .question { margin-bottom: 3pt; font-weight: bold; } /* Câu hỏi đậm */
+                        .options { margin-left: 20px; }
                         .answer-space { margin-left: 20px; font-style: italic; color: #555; }
-                        .reading-passage { border: 1px solid #ccc; padding: 15px; background-color: #fcfcfc; font-style: italic; margin-bottom: 15px; text-align: justify; }
+                        .reading-passage { border: 1px solid #ccc; padding: 10pt; background-color: #fcfcfc; font-style: italic; margin-bottom: 10pt; text-align: justify; }
                     </style></head>
                     <body>${bodyContent}</body></html>`;
 
